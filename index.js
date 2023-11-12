@@ -20,8 +20,6 @@ dotenv.config({
  
 app.use(session({secret:"eduallapp", cookie: { maxAge:24 * 60 * 60 * 1000}}))
 
-
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(logger('dev'));

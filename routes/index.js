@@ -86,11 +86,10 @@ const { RegisterProfilePageVisitor } = require("../Controllers/ProfilePageViews"
 const router = express.Router();
  
  
+ 
 router.get("/", (req, res)=>{
-   res.sendFile(path.join(__dirname, '/index.html'));
+   res.send("Hello my greatest friennds !");
 })
-
-
 
 
 router.get('/eduallusersaccounts/get/', VerifyToken ,   getUsers);

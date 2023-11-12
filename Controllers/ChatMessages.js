@@ -1,0 +1,74 @@
+const CheckInternet = require("../config/CheckInternet");
+const { DB_SQLITE, DATABASE } = require("../config/Database"); 
+const { GetCurrentUserData } = require("./GetCurrentUserData");
+ 
+
+const DATABASERUN = (res, query, params, type)=>{
+   try { 
+      if(CheckInternet() === true){  
+         if(type === 0){
+            DATABASE.query(query, params, (err, rows)=>{ 
+               if(err) return res.status(300).json({status:300, success:false, error:err});;
+               return res.json(rows);
+            });
+         }else{
+            DATABASE.query(query, params , (err)=>{ 
+               if(err) return res.status(300).json({status:300, success:false, error:err});;
+               return res.json("success");
+             }); 
+         } 
+      }else{  
+         if(type === 0){
+            DB_SQLITE.all(query, params, (err, rows)=>{ 
+               if(err) return res.status(300).json({status:300, success:false, error:err});;
+               return res.json(rows);
+            }); 
+         }else{
+            DB_SQLITE.run(query, params , (err)=>{ 
+               if(err) return res.status(300).json({status:300, success:false, error:err});;
+               return res.json("success");
+           }); 
+         } 
+      } 
+   } catch (error) {
+      res.status(400).json(error); 
+   }  
+}
+ 
+
+const GetChatMessagesByContact = async(req, res)=>{ 
+    const {CODE} = req.params;
+    const  query = `SELECT * FROM eduall_chat_messages LEFT JOIN eduall_user_accounts ON 
+     ed_chat_message_from = eduall_user_accounts.ed_user_account_id  
+     WHERE ed_chat_message_from = ? AND ed_chat_message_to = ? OR ed_chat_message_from = ? AND ed_chat_message_to = ?`;
+    const PARAMS = [CODE, GetCurrentUserData(0), GetCurrentUserData(0), CODE];
+    DATABASE.query(query, PARAMS, (err, rows)=>{ 
+        if(err) return res.status(300).json({status:300, success:false, error:err});;
+        return res.json({currentusercode:GetCurrentUserData(0), messages:rows});
+     });
+} 
+
+ 
+
+const CreateChatMessage = async(req, res)=>{ 
+    const  query = `INSERT INTO eduall_chat_messages (ed_chat_message_code, ed_chat_message_from, ed_chat_message_to,
+    ed_chat_message_group_code, ed_chat_message_content, ed_chat_message_gif) VALUES(?,?,?,?,?,?)`;
+    const PARAMS = [req.body.chat_msg_code , GetCurrentUserData(0), req.body.chat_msg_to, req.body.chat_msg_group_code, req.body.chat_msg_content, req.body.chat_msg_gif];
+    DATABASERUN(res, query , PARAMS, 1);
+} 
+
+
+const MessageDelete = async(req, res)=>{
+    const {ID} = req.params;
+    const  query = `UPDATE eduall_chat_messages SET ed_cicle_deleted = 1
+    WHERE ed_cicle_deleted = 0 AND ed_cicle_id = ?`;
+    const PARAMS = [ID];
+    DATABASERUN(res, query , PARAMS, 1);
+} 
+
+
+ 
+
+             
+
+module.exports = {CreateChatMessage, GetChatMessagesByContact};

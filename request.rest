@@ -1,0 +1,11 @@
+
+####
+POST http://localhost:5000/edualladsregister/post/2
+content-type: application/json
+{  
+    "name":"Scorpion",
+    "artist":"Drake"
+}
+
+###
+GET http://localhost:5000/eduallgetpostsbyusercontactsandfollowers/get

@@ -1,22 +1,5 @@
-const sqlite = require("sqlite3").verbose();
+
 const mysql = require("mysql"); 
-const {LocalStorage} =  require('node-localstorage');
-const CheckInternet = require("./CheckInternet");
-var localStorage = new LocalStorage('./scratch'); 
-
-
-
-const DB_SQLITE = new sqlite.Database("./me.db", (err) => {
-    if (err) {
-      console.error(err.message);
-    }else{
-      console.log(' ');
-      console.log('*************************************************************');
-      console.log('************* BANCO DE DADOS OFFLINE CONECTADO **************');
-      console.log('*************************************************************');
-      console.log(' ');
-    }
-}); 
 
   
 const CurrentNetworkStatus = ()=>{  
@@ -50,6 +33,6 @@ DATABASE  = connection;
 handleDisconnect();
 
  
-module.exports =  {DATABASE, DB_SQLITE};
+module.exports =  {DATABASE};
  
  

@@ -1,19 +1,13 @@
-var mysql  = require('mysql');
-var connection = mysql.createConnection({
-  host:"bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com", 
-  user:"uf3c2i1lgdfrfn9v",
-  password:"mY92miw96iMOuJHuWXH9",   
-  database:"bbwmy0j6vnqfwlwreg3x",
-  port:3306
-});
+const { DATABASE } = require("../config/Database"); 
  
 connection.connect(); 
   const GetStudents = async(req, res)=>{  
-  connection.query('SELECT * FROM eduall_students', function (error, results, fields) {
-    if (error){return res.json(error)}
+  const  query = `SELECT * FROM eduall_students`;
+  DATABASE.query(query, params,  function (error, results, fields) {
+      if (error){return res.json(error)}
       return res.json(results);
   });
- connection.end();
+ DATABASE.end();
 }
  
 module.exports = {GetStudents};

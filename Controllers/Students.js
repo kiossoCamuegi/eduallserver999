@@ -1,7 +1,4 @@
-
-
 const { DATABASE } = require("../config/Database"); 
-
 
   const GetStudents = async(req, res)=>{  
    const  query = `SELECT * FROM eduall_students LEFT JOIN eduall_class  ON eduall_students.ed_student_class =  eduall_class.ed_class_id  

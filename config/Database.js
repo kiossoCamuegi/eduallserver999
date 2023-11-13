@@ -7,18 +7,6 @@ var localStorage = new LocalStorage('./scratch');
 
 
 
-const DB_SQLITE = new sqlite.Database("./me.db", (err) => {
-    if (err) {
-      console.error(err.message);
-    }else{
-      console.log(' ');
-      console.log('*************************************************************');
-      console.log('************* BANCO DE DADOS OFFLINE CONECTADO **************');
-      console.log('*************************************************************');
-      console.log(' ');
-    }
-}); 
-
   
 const CurrentNetworkStatus = ()=>{  
    return {host:"localhost", user:"root", password:"", database:"eduall",charset:"utf8mb4"};   
@@ -51,6 +39,6 @@ DATABASE  = connection;
 handleDisconnect();
 
  
-module.exports =  {DATABASE, DB_SQLITE};
+module.exports =  {DATABASE};
  
  

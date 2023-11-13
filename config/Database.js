@@ -7,7 +7,6 @@ const CurrentNetworkStatus = ()=>{
 } 
  
 let DATABASE = mysql.createConnection(CurrentNetworkStatus);
-DATABASE.connect();
 module.exports =  {DATABASE};
  
  

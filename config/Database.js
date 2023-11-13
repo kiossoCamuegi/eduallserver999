@@ -1,11 +1,29 @@
 
+const sqlite = require("sqlite3").verbose();
 const mysql = require("mysql"); 
+const {LocalStorage} =  require('node-localstorage');
+const CheckInternet = require("./CheckInternet");
+var localStorage = new LocalStorage('./scratch'); 
+
+
+
+const DB_SQLITE = new sqlite.Database("./me.db", (err) => {
+    if (err) {
+      console.error(err.message);
+    }else{
+      console.log(' ');
+      console.log('*************************************************************');
+      console.log('************* BANCO DE DADOS OFFLINE CONECTADO **************');
+      console.log('*************************************************************');
+      console.log(' ');
+    }
+}); 
 
   
 const CurrentNetworkStatus = ()=>{  
- // return {host:"localhost", user:"root", password:"", database:"eduall",charset:"utf8mb4"};   http://eduallsys.com/
-  return {host:"bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com",  user:"uf3c2i1lgdfrfn9v",
-  password:"mY92miw96iMOuJHuWXH9",   database:"bbwmy0j6vnqfwlwreg3x", port:3306};
+   return {host:"localhost", user:"root", password:"", database:"eduall",charset:"utf8mb4"};   
+  /*return {host:"bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com",  user:"uf3c2i1lgdfrfn9v",
+  password:"mY92miw96iMOuJHuWXH9",   database:"bbwmy0j6vnqfwlwreg3x", port:3306};*/
 } 
 
 var connection;
@@ -33,6 +51,6 @@ DATABASE  = connection;
 handleDisconnect();
 
  
-module.exports =  {DATABASE};
+module.exports =  {DATABASE, DB_SQLITE};
  
  

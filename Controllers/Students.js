@@ -10,7 +10,7 @@ var connection = mysql.createConnection({
 connection.connect(); 
   const GetStudents = async(req, res)=>{  
   connection.query('SELECT * FROM eduall_students', function (error, results, fields) {
-    if (error){return error;}
+    if (error){return res.json(error)}
       return res.json(results);
   });
  connection.end();

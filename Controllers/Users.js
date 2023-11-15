@@ -845,16 +845,17 @@ const Login = async(req, res)=>{
                                  localStorage.setItem('AdminUsername', rows[0].ed_system_account_name.toLowerCase());  
      
                                  if(CalculateRemainingDays(rows[0].ed_institute_licence_startDate, rows[0].ed_institute_licence_endDate) <= 0){ 
-                                     console.log("*********** error making login ")
-                                   res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença #!"});
+                                 console.log("*********** error making login ")
+                                   res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença ****!"});
                                  
                                  }else{
-                                     console.log("**********Good job making loggin");
+                                     console.log("**********Good job making login *******************");
                                      
                                  const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
                                  const PARAMS5 = [cr_usercode, 2, "username"];
                                  DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
-                                     if(err) return res.json(err); 
+                                     if(err) return res.status(400).json(err); 
+                                     console.log("You are about to login with username my dear friend 😒😁🌹🤷‍♀️💖")
                                      res.status(200).json({accessToken});
                                  });  
      

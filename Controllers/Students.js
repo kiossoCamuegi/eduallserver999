@@ -47,6 +47,16 @@ const DATABASERUN = (res, query, params, type)=>{
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
+
+
+const GetSTDS = async(req, res)=>{  
+   const  query = `SELECT * FROM eduall_students LEFT JOIN eduall_class  ON eduall_students.ed_student_class =  eduall_class.ed_class_id  
+   LEFT JOIN eduall_cicles ON ed_cicle_id = eduall_class.ed_class_cicle  WHERE ed_student_deleted = 0 ORDER BY ed_student_name ASC`;
+   const PARAMS = [];
+   DATABASERUN(res, query , PARAMS, 0);  
+}
+
+
 const GetStudentsByInstitute = async(req, res)=>{  
    const {CODE} = req.params;
    const  query = `SELECT * FROM eduall_students LEFT JOIN eduall_class  ON eduall_students.ed_student_class =  eduall_class.ed_class_id  
@@ -198,5 +208,5 @@ module.exports = {
     StudentUpdate, StudentUpdateClass,
     StudentUpdateEnrollment, StudentEnrollmentConfirmationUpdate,
     uploadStudentPicture , GetSingleStudentByIdentityCard,GetEmails,
-    GetStudentsByInstitute
+    GetStudentsByInstitute, GetSTDS
 }

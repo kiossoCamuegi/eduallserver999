@@ -51,6 +51,10 @@ router.get("/auth/googlesignup/callback",
 }));
 
 
+router.get("/auth/failure", (req, res)=>{ 
+     res.redirect(URL+"autherror");
+});
+
 const UPDATETOKEN  = async(refreshToken , cr_usercode)=>{
      const  query = `UPDATE eduall_user_accounts SET ed_usertoken = ?  WHERE ed_user_account_deleted = 0 AND ed_user_account_id = ?`;
      const PARAMS =  [refreshToken  , cr_usercode]; 
@@ -293,5 +297,13 @@ router.get("/eduallfacebookauthentication/signup", isLoggedIn,  (req, res)=>{
        return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
      }
       
-}); 
+});
+
+
+
+
+
+
+
 module.exports =  router;
+

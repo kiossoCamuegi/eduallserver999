@@ -65,8 +65,8 @@ router.get("/eduallgoogleauthentication/signin", isLoggedIn,  (req, res)=>{
      console.log(req.user.emails[0].value);
      const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_user_account_email = ?  `;
      DATABASE.query(query, [req.user.emails[0].value], (err, user)=>{ 
-         if(err) return res.json(err); 
-         if(!user[0]) return res.status(400).json({msg:"Credenciais invalidas 0"});   
+         if(err) res.redirect(URL+"autherror"); ///return res.json(err); 
+         if(!user[0]) res.redirect(URL+"autherror"); //return res.status(400).json({msg:"Credenciais invalidas 0"});   
              const cr_usercode = user[0].ed_user_account_id;
              const cr_code = user[0].ed_user_account_code;
              const cr_username = user[0].ed_user_account_name;
@@ -91,12 +91,12 @@ router.get("/eduallgoogleauthentication/signin", isLoggedIn,  (req, res)=>{
                  const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
                  const PARAMS5 = [cr_usercode, 2, "google"];
                  DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
-                     if(err) return res.json(err); 
+                     if(err) res.redirect(URL+"autherror"); /// return res.json(err); 
                      localStorage.setItem('eduall_user_token', refreshToken);  
                      res.redirect(URL+"newsfeed");
                  });
              }else{
-                 res.status(400).json({msg:"Credenciais invalidas 1"});   
+               res.redirect(URL+"autherror"); ///res.status(400).json({msg:"Credenciais invalidas 1"});   
              } 
      });  
     
@@ -120,44 +120,44 @@ router.get("/eduallgoogleauthentication/signup", async(req, res)=>{
                if(emailRegexp.test(ed_user_email)){  
                     const  query2 = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND ed_user_account_email = ?  `;
                     DATABASE.query(query2, [ed_user_email], (err, rows)=>{ 
-                         if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
-                         if(rows.length >= 1) return res.status(300).json({msg:"Este email já esta a ser utilizado !"});
+                         if(err) res.redirect(URL+"autherror"); ///return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
+                         if(rows.length >= 1) res.redirect(URL+"autherror"); /// return res.status(300).json({msg:"Este email já esta a ser utilizado !"});
                          RegisterData();
                     });
                }else{
-                    return res.status(300).json({msg:"O email inserido não foi validado !"});
+                    res.redirect(URL+"autherror");/// return res.status(300).json({msg:"O email inserido não foi validado !"});
                }
           const RegisterData = ()=>{
                DATABASE.query(query, PARAMS, (err)=>{ 
-               if(err) return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
+               if(err) res.redirect(URL+"autherror"); ///return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
                try {
                     const  query2 = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND ed_user_account_email = ?  `;
                     DATABASE.query(query2, [ed_user_email], (err, rows)=>{ 
-                         if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
+                         if(err) res.redirect(URL+"autherror"); ///return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                          if(rows.length >= 1){ 
                               const  query3 = `INSERT INTO eduall_user_account_details(ed_user_account_detUSERID, ed_user_account_detAvatarColor) VALUES(?,?)`; 
                               DATABASE.query(query3, [rows[0].ed_user_account_id, RandomAvatarColor()] , (err)=>{ 
                               if(err) {
                                    const  query3 = `DELETE FROM eduall_user_accounts WHERE ed_user_account_id = ?`; 
                                    DATABASE.query(query3, [rows[0].ed_user_account_id] , (err)=>{ 
-                                        if(err) return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
-                                        return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
+                                        if(err) res.redirect(URL+"autherror"); ///return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
+                                        res.redirect(URL+"autherror"); ///return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
                                    });
                               }  
                               res.redirect(URL+"");
                          });
                          }else{ 
-                         return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});   
+                              res.redirect(URL+"autherror"); ///return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});   
                     }
                     });  
                } catch (error) {
-                    return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
+                    res.redirect(URL+"autherror"); /// return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
                }
           });
           } 
         
        }else{
-          return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
+          res.redirect(URL+"autherror"); ///return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
        }
 });
 
@@ -186,8 +186,8 @@ router.get("/eduallfacebookauthentication/signin", isLoggedIn,  (req, res)=>{
      console.log(req.user.emails[0].value);
      const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_user_account_email = ?  `;
      DATABASE.query(query, [req.user.emails[0].value], (err, user)=>{ 
-         if(err) return res.json(err); 
-         if(!user[0]) return res.status(400).json({msg:"Credenciais invalidas 0"});   
+         if(err) res.redirect(URL+"autherror"); ///return res.json(err); 
+         if(!user[0]) res.redirect(URL+"autherror");///return res.status(400).json({msg:"Credenciais invalidas 0"});   
              const cr_usercode = user[0].ed_user_account_id;
              const cr_code = user[0].ed_user_account_code;
              const cr_username = user[0].ed_user_account_name;
@@ -209,18 +209,19 @@ router.get("/eduallfacebookauthentication/signin", isLoggedIn,  (req, res)=>{
                      maxAge:24 * 60 * 60 * 1000
                  }); 
 
+                 
                          
                  const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
                  const PARAMS5 = [cr_usercode, 2, "facebook"];
                  DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
-                     if(err) return res.json(err); 
+                     if(err) res.redirect(URL+"autherror"); 
                      localStorage.setItem('eduall_user_token', refreshToken);  
                      res.redirect(URL+"newsfeed");
                  });
 
                   
              }else{
-               res.redirect(URL+"autherror");  
+               res.redirect(URL+"autherror");
                ///res.status(400).json({msg:"Credenciais invalidas 1"});   
              } 
      });  
@@ -292,12 +293,5 @@ router.get("/eduallfacebookauthentication/signup", isLoggedIn,  (req, res)=>{
        return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
      }
       
-});
-
-
-
-
-
-
-
+}); 
 module.exports =  router;

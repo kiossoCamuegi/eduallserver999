@@ -1,7 +1,7 @@
 const express = require("express"); 
 const path = require('path');
 
-const { GetSingleStudent, GetSingleStudentByCode,GetStudents, GetStudentsByClass, RegisterStudent, StudentDelete, StudentEnrollmentConfirmationUpdate, StudentUpdate, StudentUpdateClass, StudentUpdateEnrollment, uploadStudentPicture, tpath, GetSingleStudentByIdentityCard, GetEmails, GetStudentsByInstitute} = require("../Controllers/Students");
+const { GetSingleStudent, GetSingleStudentByCode,GetStudents, GetStudentsByClass, RegisterStudent, StudentDelete, StudentEnrollmentConfirmationUpdate, StudentUpdate, StudentUpdateClass, StudentUpdateEnrollment, uploadStudentPicture, tpath, GetSingleStudentByIdentityCard, GetEmails, GetStudentsByInstitute, GetSTDS} = require("../Controllers/Students");
 const { CheckExistentEmail, getSingleUserData, GetUserAccounAccess, getUsers, Login, Logout, RegisterUserAccounAccess, RegisterUserAccount, uploadUserAccountPicture, UserAccountDelete, UpdateUserAccount, getSingleUserImageData, CheckUserAccountVerificationCode, UserPasswordReset, UpdateUserPassword, getCurrentUserInformation, UPDATEProfilePicture, uploadUserAccountBackgroundPicture, UPDATEProfileCoverImage, SearchUsers, ChangeCurrentUserPassword} = require("../Controllers/Users");
 const VerifyToken  = require("../middleware/VerifyToken");
 const { ClassDelete, ClassUpdate, GetClass, GetSingleClass, RegisterClass } = require("../Controllers/Class");
@@ -94,7 +94,7 @@ router.get("/", (req, res)=>{
 
 
 router.get('/eduallusersaccounts/get/', VerifyToken ,   getUsers);
-//router.get('/eduallusersaccounts/get/', VerifyToken ,   VerifyToken , getUsers);
+router.get('/students/get/' , GetSTDS);
 router.post('/eduallusersaccountsignup/post',  RegisterUserAccount);
 router.post('/login',    Login);
 router.get('/eduallcheckexistentuseraccountemail/:EMAIL', VerifyToken ,   CheckExistentEmail);
@@ -594,3 +594,4 @@ router.get("/eduallcheckifuserisacontact/get/:CODE", VerifyToken , CheckUserCont
 router.post("/eduallprofilepageregistervisitor/post", VerifyToken, RegisterProfilePageVisitor);
 
 module.exports =  router;
+

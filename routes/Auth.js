@@ -220,7 +220,8 @@ router.get("/eduallfacebookauthentication/signin", isLoggedIn,  (req, res)=>{
 
                   
              }else{
-                 res.status(400).json({msg:"Credenciais invalidas 1"});   
+               res.redirect(URL+"autherror");  
+               ///res.status(400).json({msg:"Credenciais invalidas 1"});   
              } 
      });  
     

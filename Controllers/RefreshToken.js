@@ -38,12 +38,10 @@ const RefreshToken = async(req, res)=>{
               if(!row[0]) return  res.sendStatus(401);
               jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded)=>{
 
-                if(CalculateRemainingDays(row[0].ed_institute_licence_startDate, row[0].ed_institute_licence_endDate) <= 0) {
-
-                   return res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença *!", data1:AdminUsername , data2:localStorage.getItem("AdminUsername") })
+                if(CalculateRemainingDays(row[0].ed_institute_licence_startDate, row[0].ed_institute_licence_endDate) <= 0){
+                    console.log("Reamining days  = "+ CalculateRemainingDays(row[0].ed_institute_licence_startDate, row[0].ed_institute_licence_endDate))
+                   return res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença #!", data1:AdminUsername , data2:localStorage.getItem("AdminUsername") })
                }
-                
-
                   if(err) {
                      console.log(err);
                      return res.sendStatus(401);

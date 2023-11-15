@@ -6,7 +6,7 @@ const jwt   = require("jsonwebtoken");
 const {LocalStorage} =  require('node-localstorage');
 var localStorage = new LocalStorage('./scratch'); 
 require("../Controllers/UsersSocialAuth");
-const URL = "http://localhost:3000/";
+const URL = "https://eduallsys.com/"  // "http://localhost:3000/";
 
 function isLoggedIn(req, res, next){
      req.user ? next() : res.sendStatus(401);

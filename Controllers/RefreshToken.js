@@ -1,4 +1,4 @@
-const jwt   = require("jsonwebtoken");  
+const jwt   = require("jsonwebtoken");   
 const {LocalStorage} =  require('node-localstorage');
 const CheckInternet = require("../config/CheckInternet");
  const { DB_SQLITE, DATABASE } = require("../config/Database");
@@ -8,25 +8,28 @@ var localStorage = new LocalStorage('./scratch');
 
 
 
-const RefreshToken = async(req, res)=>{  
-    if(CheckInternet()){
+const RefreshToken = async(req, res)=>{   
         try {
-           const refreshToken =   req.cookies.refreshToken ? req.cookies.refreshToken :   (localStorage.getItem("eduall_user_token") ? localStorage.getItem("eduall_user_token") : false);
-           const AdminUsername =   req.cookies.AdminUsername ? req.cookies.AdminUsername :   (localStorage.getItem("AdminUsername") ? localStorage.getItem("AdminUsername") : false);
-  
-           if(!refreshToken){if(!localStorage.getItem("eduall_user_token"))  return res.status(400).json("something went wrong")}; 
-  
- 
-           //CHECK FOR USERNAME
-           if(AdminUsername && localStorage.getItem("AdminUsername") ){ 
+         const refreshToken =   req.cookies.refreshToken ? req.cookies.refreshToken :   (localStorage.getItem("eduall_user_token") ? localStorage.getItem("eduall_user_token") : false);
+         const AdminUsername =   req.cookies.AdminUsername ? req.cookies.AdminUsername :   (localStorage.getItem("AdminUsername") ? localStorage.getItem("AdminUsername") : false);
+
+
+         console.log("#########################################################################");
+         console.log(refreshToken);
+         console.log("---------------------------");
+         console.log(AdminUsername);
+         console.log("#########################################################################");
+
+
+         if(!refreshToken){if(!localStorage.getItem("eduall_user_token"))  return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"})}; 
+         //CHECK FOR USERNAME
+         if(AdminUsername && localStorage.getItem("AdminUsername")){ 
            const  query = `SELECT * FROM  eduall_employees LEFT JOIN  eduall_user_accounts ON
            eduall_employees.ed_employee_email = eduall_user_accounts.ed_user_account_email  LEFT JOIN  eduall_system_accounts ON
            eduall_system_accounts.ed_system_account_employee = eduall_employees.ed_employee_id
 
-           
            LEFT JOIN eduall_institutes ON eduall_institutes.ed_institute_code = eduall_system_accounts.ed_system_account_institute_code  
            LEFT JOIN eduall_institutes_licences ON eduall_institutes_licences.ed_institute_licence_instituteCode = eduall_system_accounts.ed_system_account_institute_code
-
 
            WHERE  eduall_user_accounts.ed_user_account_deleted = 0 AND 
            eduall_employees.ed_employee_deleted = 0 AND  eduall_system_accounts.ed_system_account_name = ?  AND eduall_user_accounts.ed_usertoken = ?`;
@@ -34,17 +37,17 @@ const RefreshToken = async(req, res)=>{
 
 
            DATABASE.query(query, [AdminUsername, refreshToken], (err, row)=>{ 
-              if(err) return res.json(err); 
-              if(!row[0]) return  res.sendStatus(401);
+              if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
+              if(!row[0]) return  res.status(300).json({msg:"Erro ao iniciar sessão *!"});
               jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded)=>{
 
                 if(CalculateRemainingDays(row[0].ed_institute_licence_startDate, row[0].ed_institute_licence_endDate) <= 0){
                     console.log("Reamining days  = "+ CalculateRemainingDays(row[0].ed_institute_licence_startDate, row[0].ed_institute_licence_endDate))
-                   return res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença !", data1:AdminUsername , data2:localStorage.getItem("AdminUsername") })
+                   return res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença !"})
                }
                   if(err) {
                      console.log(err);
-                     return res.sendStatus(401);
+                     return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                   }
                   const cr_usercode = row[0].ed_user_account_id;
                   const cr_username = row[0].ed_user_account_name;
@@ -66,9 +69,6 @@ const RefreshToken = async(req, res)=>{
                         return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                      }
                       if(rows.length >= 1){
-
-                     
-
                         if(CalculateRemainingDays(rows[0].ed_institute_licence_startDate, rows[0].ed_institute_licence_endDate) <= 0){ 
                             localStorage.setItem('eduall_user_curentinstitute', null); 
                             localStorage.setItem('eduall_user_curent', cr_usercode);  
@@ -82,22 +82,20 @@ const RefreshToken = async(req, res)=>{
                           localStorage.setItem('eduall_user_curent', cr_usercode); 
                       } 
                   }) 
-                  
-                  res.json({accessToken});
+                  return res.json({accessToken});
               });
            }); 
            }else{ 
-
-
+            console.log("Token  = ", refreshToken);
               const  query = 'SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND ed_usertoken = ?';
               DATABASE.query(query, [refreshToken], (err, row)=>{ 
                  if(err){
                   console.log(err) 
                   return res.json(err); 
                  } 
-                 if(row.length <= 0) return  res.sendStatus(401);
+                 if(row.length <= 0) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded)=>{
-                     if(err) return res.sendStatus(401);
+                     if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                      const cr_usercode = row[0].ed_user_account_id;
                      const cr_username = row[0].ed_user_account_name;
                      const cr_useremail = row[0].ed_user_account_email;
@@ -114,12 +112,8 @@ const RefreshToken = async(req, res)=>{
               }); 
            } 
         } catch (error) {
-         console.log(error);
-              res.json(error)
-        }
-      } else{
-        return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
-      }
+           return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor #*# !"});
+      } 
 }
 
 module.exports = RefreshToken;

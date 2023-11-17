@@ -9,10 +9,11 @@ const { DB_SQLITE, DATABASE } = require("../config/Database");
 const { GetCurrentUserData } = require("./GetCurrentUserData");
 const SendEmailMessage = require("./SendEmailMessage");
 const { passwordStrength } = require('check-password-strength') 
-const {LocalStorage} =  require('node-localstorage');
 const CalculateRemainingDays = require("../config/CalculateRemainingDays");
+
+const {LocalStorage} =  require('node-localstorage'); 
 var localStorage = new LocalStorage('./scratch'); 
- 
+
 
 const DATABASERUN = (res, query, params, type)=>{
    try { 
@@ -755,7 +756,7 @@ const Login = async(req, res)=>{
         const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_user_account_email = ?  `;
         DATABASE.query(query, [req.body.ed_user_account_email], (err, user)=>{ 
             if(err) return res.json(err); 
-            if(!user[0]) return res.status(400).json({msg:"Credenciais invalidas 0"});  
+            if(!user[0]) return res.status(400).json({msg:"Conta não encomtrada !"});  
              if(bcrypt.compareSync(req.body.ed_user_account_password , user[0].ed_user_account_password)){
                 const cr_usercode = user[0].ed_user_account_id;
                 const cr_code = user[0].ed_user_account_code;
@@ -777,10 +778,9 @@ const Login = async(req, res)=>{
                         httpOnly:true,
                         maxAge:24 * 60 * 60 * 1000
                     }); 
-                     localStorage.setItem('eduall_user_token', refreshToken); 
-                     console.log("goodboy ...")
+                    localStorage.setItem('eduall_user_token', refreshToken); 
 
-                            
+                     console.log("goodboy ...")
                      const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
                      const PARAMS5 = [cr_usercode, 2, "email"];
                      DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
@@ -812,13 +812,14 @@ const Login = async(req, res)=>{
                 if(err){
                   console.log(err)
                   console.log("error - 1")
-                 res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
+                 res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
                 }
+               if(rows !== null || rows !== undefined){
+                console.log(rows);
                 if(rows.length >= 1){ 
                     const {ed_user_account_email, ed_user_account_password} = rows[0]; 
                      console.log(ed_user_account_email, ed_user_account_password);  
-
-                     console.log(rows[0]);
+ 
               
                     if(ed_user_account_password !==  null){
                         if(bcrypt.compareSync(req.body.ed_user_account_password , ed_user_account_password)){
@@ -842,7 +843,7 @@ const Login = async(req, res)=>{
                                  localStorage.setItem('eduall_user_token', refreshToken); 
      
                                 res.cookie('AdminUsername', rows[0].ed_system_account_name.toLowerCase(),{httpOnly:true,  maxAge:24 * 60 * 60 * 1000  }); 
-                                 localStorage.setItem('AdminUsername', rows[0].ed_system_account_name.toLowerCase());  
+                                 localStorage.setItem('AdminUsername', rows[0].ed_system_account_name.toLowerCase());   
      
                                  if(CalculateRemainingDays(rows[0].ed_institute_licence_startDate, rows[0].ed_institute_licence_endDate) <= 0){ 
                                  console.log("*********** error making login ")
@@ -876,12 +877,15 @@ const Login = async(req, res)=>{
                     console.log("Not founded")
                     res.status(400).json({msg:"Credenciais invalidas !"});     
                 } 
+               }else{
+                res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 2 !"});
+               }
             })
         } 
     } catch (error) {
         console.log("error - 4")
-        res.status(404).json({msg:"Credenciais invalidas !"}); 
-    } 
+        res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 1 !"});
+    }  
 }
 
 

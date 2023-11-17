@@ -66,6 +66,7 @@ const GetUserPostsByContacts = async(req, res)=>{
      
  //* start here **/
  let output =  [];
+ const NewArray = []
  const GetData = ()=>{
    const query  = `SELECT * FROM eduall_user_contacts 
    LEFT JOIN eduall_user_accounts ON eduall_user_contacts.ed_user_contact_contactCode = eduall_user_accounts.ed_user_account_id  
@@ -82,7 +83,9 @@ const GetUserPostsByContacts = async(req, res)=>{
       const setPostWithShares  = (e, index)=>{
          DataListWithShares.push(e);
          if(index === total-1){   
-            output = DataListWithShares;
+            output = DataListWithShares; 
+            NewArray.push(DataListWithShares); 
+            ReturnData()
          }  
      }
 
@@ -271,6 +274,7 @@ const GetUserPostsByContacts = async(req, res)=>{
          }else{
             console.log(err)
             output = []
+            ReturnData()
          }
      });
    }
@@ -289,21 +293,32 @@ const GetUserPostsByContacts = async(req, res)=>{
         });
        }else{
          output = []
+         ReturnData()
        }
     }else{
-      output = {msg:err};
+      output = [];
+      ReturnData()
     }
   });
  }
     /** ends here */
  
   setTimeout(() => {
-   GetData();
-   setTimeout(() => {
+   GetData(); 
+  }, 1000); 
+
+
+
+
+  const ReturnData = ()=>{
+   setTimeout(() => { 
       console.log(output);
+      console.log("---------------------------------------------*****")
+      console.log("Well done bro");
+      console.log("---------------------------------------------*****")
       res.status(200).json(output)
-   }, 200);
-  }, 100); 
+   }, 100);
+  }
 
 
 

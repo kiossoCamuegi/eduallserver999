@@ -38,7 +38,7 @@ AppServer.use(cookieParser());
 AppServer.use(express.static(path.join(__dirname, 'public')));
 AppServer.use(Cors({
   credentials:true, 
-  origin:'http://localhost:3000', 
+  origin:'https://eduallsys.com', 
   methods:'GET,POST,DELETE,PUT'
  }));
 

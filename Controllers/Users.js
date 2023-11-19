@@ -539,10 +539,10 @@ const ChangeCurrentUserPassword = async(req, res)=>{
                         });
                  
                 }else{
-                   res.status(300).json({msg:"Password demasiado fraca !"});
+                   res.status(300).json({msg:"A nova Palavra-passe é demasiado fraca !"});
                 }
              }else{
-                res.status(400).json({msg:"A sua password está incorreta !"});  
+                res.status(400).json({msg:"A sua palavra-passe está incorreta !"});  
              }  
          });  
     } catch (error) {

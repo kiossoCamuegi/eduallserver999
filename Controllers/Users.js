@@ -814,8 +814,8 @@ const Login = async(req, res)=>{
                   console.log("error - 1")
                  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
                 }
-               if(rows !== null || rows !== undefined){
-                console.log(rows);
+               if(rows || rows !== null || rows !== undefined){  
+               if((typeof rows) === "object"){
                 if(rows.length >= 1){ 
                     const {ed_user_account_email, ed_user_account_password} = rows[0]; 
                      console.log(ed_user_account_email, ed_user_account_password);  
@@ -879,6 +879,9 @@ const Login = async(req, res)=>{
                 } 
                }else{
                 res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 2 !"});
+               }
+               }else{
+                res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 8 !"});
                }
             })
         } 

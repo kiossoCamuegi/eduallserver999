@@ -21,7 +21,7 @@ const RefreshToken = async(req, res)=>{
          console.log("#########################################################################");
 
 
-         if(!refreshToken){if(!localStorage.getItem("eduall_user_token"))  return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"})}; 
+         if(!refreshToken) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
          //CHECK FOR USERNAME
          if(AdminUsername && localStorage.getItem("AdminUsername")){ 
            const  query = `SELECT * FROM  eduall_employees LEFT JOIN  eduall_user_accounts ON
@@ -112,6 +112,8 @@ const RefreshToken = async(req, res)=>{
               }); 
            } 
         } catch (error) {
+           console.log("----------------------------------------*******");
+           console.log(error);
            return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor #*# !"});
       } 
 }

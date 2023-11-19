@@ -1,5 +1,5 @@
 const sqlite = require("sqlite3").verbose();
-const mysql = require("mysql"); 
+const mysql = require("mysql2"); 
 const {LocalStorage} =  require('node-localstorage');
 const CheckInternet = require("./CheckInternet");
 var localStorage = new LocalStorage('./scratch'); 

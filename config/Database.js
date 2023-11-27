@@ -1,8 +1,7 @@
 const sqlite = require("sqlite3").verbose();
-const mysql = require("mysql2"); 
-const {LocalStorage} =  require('node-localstorage');
-const CheckInternet = require("./CheckInternet");
-var localStorage = new LocalStorage('./scratch'); 
+const mysql = require("mysql");   
+const session = require('express-session'); 
+const mysqlStore = require('express-mysql-session')(session);
 
 
 
@@ -18,11 +17,26 @@ const DB_SQLITE = new sqlite.Database("./me.db", (err) => {
     }
 }); 
 
+
+
+ 
+ 
+
+
+
   
 const CurrentNetworkStatus = ()=>{  
-   return {host:"bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com",  user:"uf3c2i1lgdfrfn9v",
-  password:"mY92miw96iMOuJHuWXH9",   database:"bbwmy0j6vnqfwlwreg3x", port:3306};
+  
+  return {host:"bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com",  user:"uf3c2i1lgdfrfn9v",
+  password:"mY92miw96iMOuJHuWXH9",   database:"bbwmy0j6vnqfwlwreg3x", port:3306}
+
 } 
+
+const pool = mysql.createPool(CurrentNetworkStatus());
+const  SESSION_STORE = new mysqlStore(CurrentNetworkStatus(), pool);
+
+
+
 
 var connection;
 let DATABASE  = connection;
@@ -49,6 +63,5 @@ DATABASE  = connection;
 handleDisconnect();
 
  
-module.exports =  {DATABASE, DB_SQLITE};
- 
+module.exports =  {DATABASE, SESSION_STORE, DB_SQLITE};
  

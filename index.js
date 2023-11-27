@@ -56,15 +56,6 @@ app.use(session({
   
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
- 
-
-
-
-
-
-
-
-
 
 app.use((req, res, next)=>{
    console.log(req.session);
@@ -77,11 +68,6 @@ app.use(Authrouter);
 app.use(Sanitize());
 app.use('/images', express.static(__dirname+'/images'));
 app.use('/assets', express.static(__dirname+'/assets'));
-
- 
- 
- 
- 
 
 app.listen(process.env.PORT , function () {
   console.log("Server started at port: 5000");

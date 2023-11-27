@@ -21,7 +21,7 @@ dotenv.config({
 
 
 app.use(passport.initialize()); 
-app.use(Cors({credentials:true,  origin:'http://localhost:3000', methods:'GET,POST,DELETE,PUT'}));
+app.use(Cors({credentials:true,  origin:'https://eduallsys.com', methods:'GET,POST,DELETE,PUT'}));
 app.use(express.json()); 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -57,7 +57,7 @@ app.use(session({
   cookie: {
     secure: true,
     httpOnly: true,
-    domain: 'http://localhost:3000',
+    domain: 'https://eduallsys.com',
     path: 'foo/bar',
     expires: 823997238974343
   }

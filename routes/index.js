@@ -2,7 +2,7 @@ const express = require("express");
 const path = require('path');
 
 const { GetSingleStudent, GetSingleStudentByCode,GetStudents, GetStudentsByClass, RegisterStudent, StudentDelete, StudentEnrollmentConfirmationUpdate, StudentUpdate, StudentUpdateClass, StudentUpdateEnrollment, uploadStudentPicture, tpath, GetSingleStudentByIdentityCard, GetEmails, GetStudentsByInstitute, GetSTDS} = require("../Controllers/Students");
-const { CheckExistentEmail, getSingleUserData, GetUserAccounAccess, getUsers, Login, Logout, RegisterUserAccounAccess, RegisterUserAccount, uploadUserAccountPicture, UserAccountDelete, UpdateUserAccount, getSingleUserImageData, CheckUserAccountVerificationCode, UserPasswordReset, UpdateUserPassword, getCurrentUserInformation, UPDATEProfilePicture, uploadUserAccountBackgroundPicture, UPDATEProfileCoverImage, SearchUsers, ChangeCurrentUserPassword} = require("../Controllers/Users");
+const { CheckExistentEmail, getSingleUserData, GetUserAccounAccess, getUsers, Login, RegisterUserAccounAccess, RegisterUserAccount, uploadUserAccountPicture, UserAccountDelete, UpdateUserAccount, getSingleUserImageData, CheckUserAccountVerificationCode, UserPasswordReset, UpdateUserPassword, getCurrentUserInformation, UPDATEProfilePicture, uploadUserAccountBackgroundPicture, UPDATEProfileCoverImage, SearchUsers, ChangeCurrentUserPassword} = require("../Controllers/Users");
 const VerifyToken  = require("../middleware/VerifyToken");
 const { ClassDelete, ClassUpdate, GetClass, GetSingleClass, RegisterClass } = require("../Controllers/Class");
 const { CourseDelete, CourseUpdate, GetCourse, GetsingleCourse, RegisterCourse } = require("../Controllers/Courses");
@@ -83,14 +83,119 @@ const { RegisterStudentBehavior, GetAllStudentBehaviorByStudentCode } = require(
 const { FollowInstitute, CheckIfFollowingInstitute, GetSingleInstituteFollowers } = require("../Controllers/InstituteFollowers");
 const { MakeUserContactRequest, CheckUserContactRequest } = require("../Controllers/UserContacts");
 const { RegisterProfilePageVisitor } = require("../Controllers/ProfilePageViews");
+const CalculateRemainingDays = require("../config/CalculateRemainingDays");
+const { DATABASE } = require("../config/Database");
 const router = express.Router();
+ const jwt   = require("jsonwebtoken");     
  
- 
-router.get("/", (req, res)=>{
+router.get("/", VerifyToken ,  (req, res)=>{
    res.send("Hello my greatest friennds !");
 })
 
+router.get("/token", function(req, res){ 
+   if(req.session.user !== undefined && req.session.user !== null){
+      const refreshToken =  req.session.user.eduall_user_session_refreshToken;
+      const AdminUsername = req.session.user.eduall_user_session_username;
+        
+      if(!refreshToken) return res.status(300).json(req.session);
+    
+      if(AdminUsername &&  AdminUsername !== undefined && AdminUsername !== null){ 
+         const  query = `SELECT * FROM  eduall_employees LEFT JOIN  eduall_user_accounts ON
+         eduall_employees.ed_employee_email = eduall_user_accounts.ed_user_account_email  LEFT JOIN  eduall_system_accounts ON
+         eduall_system_accounts.ed_system_account_employee = eduall_employees.ed_employee_id
+    
+         LEFT JOIN eduall_institutes ON eduall_institutes.ed_institute_code = eduall_system_accounts.ed_system_account_institute_code  
+         LEFT JOIN eduall_institutes_licences ON eduall_institutes_licences.ed_institute_licence_instituteCode = eduall_system_accounts.ed_system_account_institute_code
+    
+         WHERE  eduall_user_accounts.ed_user_account_deleted = 0 AND 
+         eduall_employees.ed_employee_deleted = 0 AND  eduall_system_accounts.ed_system_account_name = ?  AND eduall_user_accounts.ed_usertoken = ?`;
+    
+    
+    
+         DATABASE.query(query, [AdminUsername, refreshToken], (err, row)=>{ 
+            if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !!!!!**!*!"});
+            if(!row[0]) return  res.status(300).json({msg:"Erro ao iniciar sessão *!"});
+            jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded)=>{
+    
+              if(CalculateRemainingDays (row[0].ed_institute_licence_startDate, row[0].ed_institute_licence_endDate) <= 0){
+                  console.log("Reamining days  = "+ CalculateRemainingDays(row[0].ed_institute_licence_startDate, row[0].ed_institute_licence_endDate))
+                  console.log("Data sent with error 😢😢😢")
+                 return res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença !"})
+             }
+                if(err) {
+                   console.log(err);
+                   console.log("Data sent with error 😢😢😢")
+                   return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor ++++++++!"});
+                }
+                const cr_usercode = row[0].ed_user_account_id;
+                const cr_username = row[0].ed_user_account_name;
+                const cr_useremail = row[0].ed_user_account_email;
+                const cr_usertype = 0;
+                const cr_username_id =  row[0].ed_system_account_id;
+                const cr_user_largecode = row[0].ed_user_account_code;
+                const accessToken = jwt.sign({cr_usercode, cr_user_largecode, cr_username_id, cr_username, cr_useremail, cr_usertype}, process.env.ACCESS_TOKEN_SECRET,{
+                   expiresIn:'15s'
+                });
+    
+                const  query2 = `SELECT * FROM eduall_user_institutes
+                LEFT JOIN eduall_institutes ON   eduall_user_institutes.ed_user_institute_code = eduall_institutes.ed_institute_code 
+                LEFT JOIN eduall_institutes_licences ON eduall_institutes_licences.ed_institute_licence_instituteCode =  eduall_user_institutes.ed_user_institute_code  
+                WHERE eduall_user_institutes.ed_user_institute_deleted = 0 AND  eduall_user_institutes.ed_user_institute_userCode = ? AND eduall_institutes.ed_institute_code = ?`;
+                DATABASE.query(query2, [cr_usercode, row[0].ed_system_account_institute_code], (err, rows)=>{ 
+                   console.log(rows);
+    
+                    if(err) {
+                      console.log(err) 
+                      console.log("Data sent with error 😢😢😢")
+                      return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor *****!"});
+                   }
+                    if(rows.length >= 1){
+                      if(CalculateRemainingDays(rows[0].ed_institute_licence_startDate, rows[0].ed_institute_licence_endDate) <= 0){ 
+                         req.session.user.eduall_user_session_curentinstitute =  null;  
+                           return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !@@@@@@@@@@@@@"});
+                      }else{ 
+                       console.log("Data sent 😜😊😍") 
+                        return res.json({accessToken});
+                      }
+                 
+                    }else{
+                     console.log("Data sent with error 😢😢😢")
+                      req.session.user.eduall_user_session_curentinstitute =  null;
+                       return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor **+*+*+****!"});
+                    } 
+                })   
+            });
+         }); 
+         }else{ 
+          console.log("Token  = ", refreshToken);
+            const  query = 'SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND ed_usertoken = ?';
+            DATABASE.query(query, [refreshToken], (err, row)=>{ 
+               if(err){
+                console.log(err) 
+                console.log("Data sent with error 😢😢😢")
+                return res.json(err); 
+               } 
+               if(row.length <= 0) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor -*-*---***"});
+               jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded)=>{
+                   if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor */*/*!"});
+                   const cr_usercode = row[0].ed_user_account_id;
+                   const cr_username = row[0].ed_user_account_name;
+                   const cr_useremail = row[0].ed_user_account_email;
+                   const cr_usertype = 1;
+                   const cr_user_largecode = row[0].ed_user_account_code;
+                   const accessToken = jwt.sign({cr_usercode, cr_user_largecode, cr_username, cr_useremail, cr_usertype}, process.env.ACCESS_TOKEN_SECRET,{
+                      expiresIn:'15s'
+                   }); 
+                   console.log("Data sent 😜😊😍")
+                   res.json({accessToken});
+               });
+            }); 
+         } 
 
+    }else{
+      return res.json({data:null});
+    } 
+})
 
 
 router.get('/eduallusersaccounts/get/', VerifyToken ,   getUsers);
@@ -98,11 +203,32 @@ router.get('/students/get/' , GetSTDS);
 router.post('/eduallusersaccountsignup/post',  RegisterUserAccount);
 router.post('/login',    Login);
 router.get('/eduallcheckexistentuseraccountemail/:EMAIL', VerifyToken ,   CheckExistentEmail);
-router.get('/token', VerifyToken, RefreshToken);
+router.get('/tokensssskjsjs',  RefreshToken);
 router.get('/eduallsingleuserdata/get/:ID', VerifyToken ,   getSingleUserData); 
 router.get('/eduallgetuserimagebyuser/get/:EMAIL', getSingleUserImageData);  
 router.post("/eduallpasswordupdate",   UpdateUserPassword);
-router.delete('/logout',  Logout);
+
+router.delete('/logout',  (req, res, next)=>{  
+  // logout logic
+
+  // clear the user from the session object and save.
+  // this will ensure that re-using the old session id
+  // does not have a logged in user
+  req.session.user = null
+  req.session.save(function (err) {
+    if (err) next(err)
+
+    // regenerate the session, which is good practice to help
+    // guard against forms of session fixation
+    req.session.regenerate(function (err) {
+      if (err) next(err)
+      res.send('Top !!')
+    })
+  })
+})
+
+
+
 router.put('/edualluseraccountupdate/update/:ID', VerifyToken ,   UpdateUserAccount);
 router.get('/eduallgetuseraccess/get/:CODE', VerifyToken ,   GetUserAccounAccess);
 router.put("/edualluseraccountdelete/delete/:ID", VerifyToken ,  UserAccountDelete);
@@ -594,4 +720,3 @@ router.get("/eduallcheckifuserisacontact/get/:CODE", VerifyToken , CheckUserCont
 router.post("/eduallprofilepageregistervisitor/post", VerifyToken, RegisterProfilePageVisitor);
 
 module.exports =  router;
-

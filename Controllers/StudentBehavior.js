@@ -37,7 +37,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetAllStudentBehavior = async(req,res)=>{
   const  query = `SELECT * FROM eduall_student_behavior WHERE ed_student_behavior_deleted = 0 AND ed_student_behavior_instituteCode	= ?`; 
-  const PARAMS = [GetCurrentUserData(1)];
+  const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
   DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -57,7 +57,7 @@ const RegisterStudentBehavior = async(req, res)=>{
    const  query = `INSERT INTO eduall_student_behavior(ed_student_behavior_Studentcode, ed_student_behavior_description, ed_student_behavior_employeeCode, 
     ed_student_behavior_stars, 	ed_student_behavior_classSub, ed_student_behavior_type, ed_student_behavior_user,ed_student_behavior_instituteCode) VALUES(?,?,?,?,?,?,?,?)`;
    const PARAMS = [req.body.student_behavior_code, req.body.student_behavior_description, req.body.student_behavior_employee, 
-  req.body.student_behavior_stars, req.body.student_behavior_subClass, req.body.student_behavior_type, GetCurrentUserData(0), GetCurrentUserData(1)];
+  req.body.student_behavior_stars, req.body.student_behavior_subClass, req.body.student_behavior_type, req.session.user.eduall_user_session_ID, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 } 
 

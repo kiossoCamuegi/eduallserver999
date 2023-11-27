@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 const GetTransportTuitionpayments = async(req, res)=>{ 
      if(CheckInternet() === true){
       try {
-         const Data = await TransportTuitionsModel.findAll({where:{ed_transport_tuition_deleted:0,ed_academic_level_institute_code:GetCurrentUserData(1)}});
+         const Data = await TransportTuitionsModel.findAll({where:{ed_transport_tuition_deleted:0,ed_academic_level_institute_code:req.session.user.eduall_user_session_curentinstitute}});
          res.json(Data);
       } catch (error) {
          res.status(400).json(error); 
@@ -48,7 +48,7 @@ const GetTransportTuitionpayments = async(req, res)=>{
     //########################
       const  query = 'SELECT * FROM eduall_academic_level WHERE ed_transport_tuition_deleted = 0 AND  ed_academic_level_institute_code = ?';
       try {
-         DB_SQLITE.all(query, [GetCurrentUserData(1)], (err, rows)=>{ 
+         DB_SQLITE.all(query, [req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
              if(err) return res.status(300).json({status:300, success:false, error:err});;
              return res.json(rows);
          }); 
@@ -154,7 +154,7 @@ const RegisterTransportTuitionPayment = async(req, res)=>{
 //########################
    const  query = `INSERT INTO eduall_academic_level(ed_academic_level_title, ed_academic_level_institute_code) VALUES(?,?)`;
    try {
-      DB_SQLITE.run(query, [req.body.academic_level_title , GetCurrentUserData(1)], (err)=>{ 
+      DB_SQLITE.run(query, [req.body.academic_level_title , req.session.user.eduall_user_session_curentinstitute], (err)=>{ 
             if(err) return res.status(300).json({status:300, success:false, error:err});;
             return res.json("success");
       }); 

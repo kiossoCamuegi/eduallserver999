@@ -19,6 +19,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -40,7 +41,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
  const Getemployees = async(req, res)=>{  
     const  query = `SELECT * FROM eduall_employees WHERE ed_employee_deleted = 0 AND ed_employee_institute_code = ?`; 
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -58,7 +59,7 @@ const GetSingleEmployee = async(req, res)=>{
     LEFT JOIN eduall_user_account_details ON eduall_user_account_details.ed_user_account_detUSERID = eduall_user_accounts.ed_user_account_id
 
     WHERE eduall_employees.ed_employee_deleted = 0 AND eduall_employees.ed_employee_id = ? AND eduall_employees.ed_employee_institute_code = ?`; 
-    const PARAMS = [ID, GetCurrentUserData(1)];
+    const PARAMS = [ID, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -72,7 +73,7 @@ const GetEmployeeDataByUser = async(req, res)=>{
        LEFT JOIN eduall_employees ON  eduall_user_institutes.ed_user_institute_employeeCode = eduall_employees.ed_employee_id
       WHERE eduall_user_institutes.ed_user_institute_deleted = 0 AND  eduall_user_institutes.ed_user_institute_userCode = ? 
       AND eduall_user_institutes.ed_user_institute_code = ?  AND eduall_employees.ed_employee_institute_code  = ?`;
-      DATABASERUN(res, query, [GetCurrentUserData(0), GetCurrentUserData(1), GetCurrentUserData(1)], 0);
+      DATABASERUN(res, query, [req.session.user.eduall_user_session_ID, req.session.user.eduall_user_session_curentinstitute, req.session.user.eduall_user_session_curentinstitute], 0);
 }
 
 
@@ -97,7 +98,7 @@ const RegisterEmployee = async(req, res)=>{
    req.body.employee_gender, req.body.employee_religion, req.body.employee_birthday, req.body.employee_phone,
    req.body.employee_landline,req.body.employee_nif, req.body.employee_email,req.body.employee_civil_state,req.body.employee_code,
    (req.file ? "images/employees/"+req.file.filename : ""), req.body.employee_identityCard,  
-   req.body.employee_charge, req.body.employee_subjects, req.body.employee_status , GetCurrentUserData(1)];
+   req.body.employee_charge, req.body.employee_subjects, req.body.employee_status , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
  

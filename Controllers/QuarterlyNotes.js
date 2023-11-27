@@ -40,7 +40,7 @@ const GetQuarterlyNotes = async(req, res)=>{
     const  query = `SELECT * FROM eduall_quarterly_notes  
     LEFT JOIN eduall_students ON eduall_students.ed_student_id = eduall_quarterly_notes.ed_quarter_note_studentcode
      where ed_quarter_note_deleted = 0 AND ed_quarter_note_institute_code = ?`; 
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -69,7 +69,7 @@ const GetsingleQuarterlyNotebYQrtSub = async(req,res)=>{
 
     WHERE ed_quarter_note_quarter = ? AND ed_quarter_note_subject = ? AND
     ed_quarter_note_class = ? AND ed_quarter_note_deleted = 0 AND ed_quarter_note_institute_code = ?`; 
-    const PARAMS = [QUARTER,SUBJECT,CLASS, GetCurrentUserData(1)];
+    const PARAMS = [QUARTER,SUBJECT,CLASS, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -84,7 +84,7 @@ const GetsingleQuarterlyNoteByID = async(req,res)=>{
     LEFT JOIN eduall_students ON eduall_students.ed_student_id = eduall_quarterly_notes.ed_quarter_note_studentcode
 
     WHERE ed_quarter_note_id = ?  AND ed_quarter_note_deleted = 0 AND ed_quarter_note_institute_code = ?`; 
-    const PARAMS = [ID,GetCurrentUserData(1)];
+    const PARAMS = [ID,req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -100,7 +100,7 @@ const GetsingleQuarterlyNotebYSubCls = async(req,res)=>{
 
     WHERE ed_quarter_note_subject = ? AND ed_quarter_note_deleted = 0
     AND ed_quarter_note_subject = ? AND ed_quarter_note_class = ? AND ed_quarter_note_institute_code = ?`; 
-    const PARAMS = [SUBJECT,CLASS, GetCurrentUserData(1)];
+    const PARAMS = [SUBJECT,CLASS, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -134,7 +134,7 @@ const GetsingleQuarterlyNotebYSubStdQrtType = async(req,res)=>{
 
       WHERE  ed_quarter_note_deleted = 0  AND ed_quarter_note_subject  = ?
       AND ed_quarter_note_quarter  = ? AND ed_quarter_note_studentcode = ? AND ed_quarter_note_class  = ? AND ed_quarter_note_institute_code = ?`;
-      const PARAMS = [SUBJECT,QUARTER,STUDENT, CLASS, GetCurrentUserData(1)];
+      const PARAMS = [SUBJECT,QUARTER,STUDENT, CLASS, req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -150,7 +150,7 @@ const GetsingleQuarterlyNotebYSubStdQrtTypeClass = async(req,res)=>{
 
       WHERE  ed_quarter_note_deleted = 0  AND ed_quarter_note_subject  = ?
       AND ed_quarter_note_quarter  = ? AND ed_quarter_note_studentcode = ? AND ed_quarter_note_class  = ? AND ed_quarter_note_institute_code = ?`;
-      const PARAMS = [SUBJECT,QUARTER,STUDENT, CLASS, GetCurrentUserData(1)];
+      const PARAMS = [SUBJECT,QUARTER,STUDENT, CLASS, req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -159,7 +159,7 @@ const RegisterQuarterlyNote = async(req, res)=>{
    const  query = `INSERT INTO eduall_quarterly_notes(ed_quarter_note_studentcode,  ed_quarter_note_subject, ed_quarter_note_quarter,
    ed_quarter_note_mac, ed_quarter_note_npp,ed_quarter_note_class,ed_quarter_note_npt, ed_quarter_note_institute_code) VALUES(?,?,?,?,?,?,?,?)`;
    const PARAMS = [req.body.quarterly_note_student_code, req.body.quarterly_note_subject,req.body.quarterly_note_quarter, 
-   req.body.quarterly_note_mac, req.body.quarterly_note_npp,req.body.quarterly_note_class,req.body.quarterly_note_npt, GetCurrentUserData(1)];
+   req.body.quarterly_note_mac, req.body.quarterly_note_npp,req.body.quarterly_note_class,req.body.quarterly_note_npt, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 } 
 

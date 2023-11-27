@@ -38,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetSubjects = async(req, res)=>{
    const  query = 'SELECT * FROM eduall_subjects WHERE ed_subject_deleted = 0 AND ed_subject_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -55,7 +55,7 @@ const GetSingleSubject = async(req,res)=>{
 const RegisterSubject = async(req, res)=>{
    const  query = `INSERT INTO eduall_subjects(ed_subject_title, ed_subject_category, ed_subject_type, 
    ed_subject_institute_code) VALUES(?,?,?,?)`; 
-   const PARAMS = [req.body.subject_title,req.body.subject_category, req.body.subject_type, GetCurrentUserData(1)];
+   const PARAMS = [req.body.subject_title,req.body.subject_category, req.body.subject_type, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -38,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetEmployeesAttendance = async(req, res)=>{ 
       const  query = `SELECT * FROM eduall_employee_attendence WHERE ed_employee_attd_deleted = 0 AND ed_employee_attd_institute_code = ? `;
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -54,7 +55,7 @@ const GetEmployeeAttendanceBycode = async(req,res)=>{
 
    WHERE eduall_employee_attendence.ed_employee_attd_deleted = 0 AND eduall_employee_attendence.ed_employee_attd_code = ? 
    AND eduall_employee_attendence.ed_employee_attd_institute_code = ?`;
-   const PARAMS = [CODE, GetCurrentUserData(1)];
+   const PARAMS = [CODE, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 }  
  
@@ -69,7 +70,7 @@ const RegisterEmployeeAttendance = async(req, res)=>{
    const  query = `INSERT INTO eduall_employee_attendence(ed_employee_attd_code ,ed_employee_attd_date,ed_employee_attd_timing,
    ed_employee_attd_status, ed_employee_attd_institute_code) VALUES(?,?,?,?,?)`;
    const PARAMS = [req.body.employee_attendance_code,req.body.employee_attendance_date,req.body.employee_attendance_timing,
-   req.body.employee_attendance_status,  GetCurrentUserData(1)];
+   req.body.employee_attendance_status,  req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
 

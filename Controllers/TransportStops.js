@@ -40,7 +40,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetTransportStops = async(req, res)=>{  
    const  query = 'SELECT * FROM eduall_transport_stops WHERE ed_transport_stop_deleted = 0 AND  ed_transport_stop_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0); 
 }
 
@@ -54,7 +54,7 @@ const GetsingleTransportStop = async(req,res)=>{
 const RegisterTransportStop = async(req, res)=>{  
    const  query = `INSERT INTO eduall_transport_stops(ed_transport_stop_name,ed_transport_stop_route,ed_transport_stop_map,
    ed_transport_stop_estimate_of_arrival, ed_transport_stop_institute_code) VALUES(?,?,?,?,?)`;
-   const PARAMS = [req.body.stop_name, req.body.stop_route, req.body.stop_map, req.body.stop_estimate_of_arrival, GetCurrentUserData(1)];
+   const PARAMS = [req.body.stop_name, req.body.stop_route, req.body.stop_map, req.body.stop_estimate_of_arrival, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1); 
 }
 

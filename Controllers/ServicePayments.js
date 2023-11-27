@@ -40,7 +40,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetServicePayments = async(req, res)=>{ 
       const  query = 'SELECT * FROM eduall_service_payments WHERE ed_service_payment_deleted = 0 AND ed_service_payment_institute_code = ?';
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -63,7 +63,7 @@ const RegisterServicePayment = async(req, res)=>{
    req.body.service_payment_obs,req.body.service_payment_balance ,req.body.service_payment_discount ,
    req.body.service_payment_exchange ,req.body.service_payment_price ,req.body.service_payment_change ,
    req.body.service_payment_value_delivered,req.body.service_payment_bordeaux,req.body.service_payment_bank_name,
-   req.file.filename, GetCurrentUserData(1)];
+   req.file.filename, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
 
@@ -101,7 +101,7 @@ const GetSinglePaidService = async(req,res)=>{
    const {MONTH, STUDENTCODE, SERVICE} = req.params; 
    const  query = `SELECT * FROM eduall_service_payments WHERE ed_service_payment_month =? AND ed_service_payment_student_code =? AND
    ed_service_payment_service = ? AND ed_service_payment_institute_code = ? AND ed_service_payment_deleted = 0`;
-   const PARAMS = [MONTH,STUDENTCODE,SERVICE, GetCurrentUserData(1)];
+   const PARAMS = [MONTH,STUDENTCODE,SERVICE, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 } 
 

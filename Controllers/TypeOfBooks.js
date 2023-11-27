@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetTypeofbooks = async(req, res)=>{ 
    const  query = 'SELECT * FROM eduall_library_typeofbooks WHERE ed_library_typeofbook_deleted = 0 AND  ed_library_typeofbook_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -54,7 +54,7 @@ const GetSingleTypeofbook = async(req,res)=>{
 const RegisterTypeofbook = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_library_typeofbooks(ed_library_typeofbook_title, ed_library_typeofbook_code , 
    ed_library_typeofbook_institute_code) VALUES(?,?,?)`;
-   const PARAMS = [req.body.typeofbook_title,req.body.typeofbook_code, GetCurrentUserData(1)];
+   const PARAMS = [req.body.typeofbook_title,req.body.typeofbook_code, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

@@ -46,7 +46,7 @@ const GetsingleStudentExamNotebYSubStCls = async(req,res)=>{
       
       WHERE ed_student_exam_subject  = ? AND ed_student_exam_studentCode = ? 
        AND ed_student_exam_class  = ? AND  ed_student_exam_deleted  = 0 AND  ed_student_exam_institute_code  = ?  `;
-      const PARAMS = [CLASS, SUBJECT, STUDENT, CLASS, GetCurrentUserData(1)];
+      const PARAMS = [CLASS, SUBJECT, STUDENT, CLASS, req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -54,7 +54,7 @@ const GetsingleStudentExamNotebYSubStCls = async(req,res)=>{
 const RegisterStudentExamNotes = async(req, res)=>{
    const  query = `INSERT INTO eduall_student_exam_notes(ed_student_exam_studentCode, ed_student_exam_class, ed_student_exam_subject, 
    ed_student_exam_score, ed_student_exam_institute_code	) VALUES(?,?,?,?,?)`; 
-   const PARAMS = [req.body.student_exam_code, req.body.student_exam_class  , req.body.student_exam_subject , req.body.student_exam_score, GetCurrentUserData(1)];
+   const PARAMS = [req.body.student_exam_code, req.body.student_exam_class  , req.body.student_exam_subject , req.body.student_exam_score, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

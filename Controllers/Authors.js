@@ -10,13 +10,14 @@ const DATABASERUN = (res, query, params, type)=>{
             DATABASE.query(query, params, (err, rows)=>{ 
                if(err) return res.status(300).json({status:300, success:false, error:err});;
                return res.json(rows);
-            });
+            }); 
          }else{
             DATABASE.query(query, params , (err)=>{ 
                if(err) return res.status(300).json({status:300, success:false, error:err});;
                return res.json("success");
-             }); 
+             });  
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -37,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
  
 const GetAuthors = async(req, res)=>{ 
      const  query = 'SELECT * FROM eduall_library_authors WHERE ed_library_author_deleted = 0 AND ed_library_author_institute_code = ?';
-     const PARAMS = [GetCurrentUserData(1)];
+     const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
      DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -51,7 +52,7 @@ const GetSingleAuthor = async(req,res)=>{
 
 const RegisterAuthor = async(req, res)=>{ 
     const  query = `INSERT INTO eduall_library_authors(ed_library_author_name, ed_library_author_status ,ed_library_author_institute_code) VALUES(?,?,?)`;
-    const PARAMS = [req.body.author_name,req.body.author_status, GetCurrentUserData(1)];
+    const PARAMS = [req.body.author_name,req.body.author_status, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 1); 
 }
  

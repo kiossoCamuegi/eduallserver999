@@ -38,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetServices = async(req, res)=>{ 
       const  query = 'SELECT * FROM eduall_services WHERE ed_service_deleted = 0 AND ed_service_institute_code = ?';
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -54,7 +54,7 @@ const RegisterService = async(req, res)=>{
    const  query = `INSERT INTO eduall_services(ed_service_title, ed_service_type,ed_service_provider, ed_service_price, ed_service_iva, 
    ed_service_description,ed_service_institute_code) VALUES(?,?,?,?,?,?,?)`;
    const PARAMS = [req.body.service_title,req.body.service_type,req.body.service_provider,req.body.service_price,
-   req.body.service_iva,req.body.service_description, GetCurrentUserData(1)];
+   req.body.service_iva,req.body.service_description, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
 

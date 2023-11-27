@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -37,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
  
 const GetCourse = async(req, res)=>{ 
    const  query = 'SELECT * FROM eduall_courses WHERE ed_course_deleted = 0 AND  ed_course_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -50,7 +51,7 @@ const GetsingleCourse = async(req,res)=>{
 
 const RegisterCourse = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_courses(ed_course_title  , ed_course_category,  ed_course_institute_code) VALUES(?,?,?)`;
-    const PARAMS = [req.body.course_title, req.body.course_category,  GetCurrentUserData(1)];
+    const PARAMS = [req.body.course_title, req.body.course_category,  req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 1); 
 }
 

@@ -11,11 +11,13 @@ const DATABASERUN = (res, query, params, type)=>{
                if(err) return res.status(300).json({status:300, success:false, error:err});;
                return res.json(rows);
             });
+            
          }else{
             DATABASE.query(query, params , (err)=>{ 
                if(err) return res.status(300).json({status:300, success:false, error:err});;
                return res.json("success");
              }); 
+             
          } 
       }else{  
          if(type === 0){
@@ -47,7 +49,7 @@ const AuditoryRegister = async(req, res)=>{
    VALUES(?,?,?,?,?,?)`;
    const PARAMS = [req.body.auditory_form, auditory_user_code, req.body.auditory_action_type,
    req.body.auditory_action, req.body.auditory_form, auditory_user_code, req.body.auditory_action_type,
-   req.body.auditory_description ,GetCurrentUserData(1)];
+   req.body.auditory_description ,req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
  

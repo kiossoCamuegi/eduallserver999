@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -40,7 +41,7 @@ const GetDeclarationRequests = async(req, res)=>{
    const  query = `SELECT * FROM eduall_declaration_requests 
    LEFT JOIN eduall_students ON eduall_students.ed_student_id =  eduall_declaration_requests.ed_declaration_request_student_code
    WHERE eduall_declaration_requests.ed_declaration_request_deleted = 0 AND eduall_declaration_requests.ed_declaration_request_institute_code = ?`;
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 } 
 
@@ -56,7 +57,7 @@ const RegisterDeclarationRequest = async(req, res)=>{
    const  query = `INSERT INTO eduall_declaration_requests(ed_declaration_request_student_code, ed_declaration_request_by,
    ed_declaration_request_with_marks,ed_declaration_request_description, ed_declaration_request_institute_code) VALUES(?,?,?,?,?)`;
    const PARAMS = [req.body.declaration_request_student_code, req.body.declaration_request_by,
-   req.body.declaration_request_with_marks,req.body.declaration_request_description, GetCurrentUserData(1)];
+   req.body.declaration_request_with_marks,req.body.declaration_request_description, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
  

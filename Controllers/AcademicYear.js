@@ -37,14 +37,14 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetAcademicYear = async(req,res)=>{
   const  query = `SELECT * FROM eduall_academic_year WHERE ed_academic_year_deleted = 0 AND ed_academic_year_institute_code =?`; 
-  const PARAMS = [GetCurrentUserData(1)];
+  const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
   DATABASERUN(res, query , PARAMS, 0);
 }
 
 const RegisterAcademicYear = async(req, res)=>{
    const  query = `INSERT INTO eduall_academic_year(ed_academic_year_title, ed_academic_year_startDate, ed_academic_year_endDate, 
    ed_academic_year_institute_code) VALUES(?,?,?,?)`;
-   const PARAMS = [req.body.title , req.body.year_date_start, req.body.year_date_finish, GetCurrentUserData(1)];
+   const PARAMS = [req.body.title , req.body.year_date_start, req.body.year_date_finish, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 } 
 

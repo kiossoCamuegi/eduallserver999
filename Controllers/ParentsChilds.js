@@ -57,7 +57,7 @@ const GetSingleUserChilds = async(req, res)=>{
     LEFT JOIN eduall_institutes ON eduall_students.ed_student_institute_code = eduall_institutes.ed_institute_code
    WHERE eduall_institutes.ed_institute_deleted = 0 AND  eduall_students.ed_student_deleted = 0 AND
     eduall_parent_childrens.ed_parent_children_deleted = 0 AND  eduall_parent_childrens.ed_parent_children_UserCode = ?`;
-   const PARAMS = [GetCurrentUserData(0)];
+   const PARAMS = [req.session.user.eduall_user_session_ID];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 

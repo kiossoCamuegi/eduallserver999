@@ -51,7 +51,7 @@ const GetStudentsUserAccounts = async(req, res)=>{
     eduall_users_student_accounts.ed_user_std_account_studentCode =  eduall_students.ed_student_id
     WHERE  eduall_users_student_accounts.ed_user_std_account_deleted = 0 AND  eduall_students.ed_student_deleted = 0 AND
     eduall_users_student_accounts.ed_user_std_account_instituteCode = ? ORDER BY eduall_students.ed_employee_name ASC`;
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -68,7 +68,7 @@ const GetSingleUserStudentAccounts = async(req, res)=>{
    
    eduall_students.ed_student_deleted = 0 
    `;
-   const PARAMS = [GetCurrentUserData(0)];
+   const PARAMS = [req.session.user.eduall_user_session_ID];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -79,7 +79,7 @@ const RegisterStudentUserAccount = async(req, res)=>{
     if(CheckInternet() === true){    
         const  query2 = `SELECT * FROM eduall_users_student_accounts WHERE ed_user_std_account_deleted = 0 
         AND ed_user_std_account_userCode = ?  AND ed_user_std_account_instituteCode   = ?`;
-        DATABASE.query(query2, [student_account_usercode, GetCurrentUserData(1)], (err, rows)=>{ 
+        DATABASE.query(query2, [student_account_usercode, req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
 
                 if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                 if(rows.length >= 1) return res.status(300).json({msg:"Já foi atribuido um estudante á esta conta !"}); 
@@ -98,7 +98,7 @@ const RegisterStudentUserAccount = async(req, res)=>{
                     LEFT JOIN eduall_students ON  eduall_users_student_accounts.ed_user_std_account_studentCode =  eduall_students.ed_student_id 
                     WHERE eduall_users_student_accounts.ed_user_std_account_deleted = 0 AND  eduall_students.ed_student_institute_code = ?
                     AND eduall_users_student_accounts.ed_user_std_account_studentCode = ?  AND  eduall_users_student_accounts.ed_user_std_account_instituteCode = ?`; 
-                    DATABASE.query(query4, [GetCurrentUserData(1), student_account_studentcode ,  GetCurrentUserData(1)], (err, rows)=>{ 
+                    DATABASE.query(query4, [req.session.user.eduall_user_session_curentinstitute, student_account_studentcode ,  req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
                         if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                             if(rows.length >= 1) return res.status(300).json({msg:"Já foi atribuido um estudante á esta conta !"}); 
                             RegisterData();
@@ -114,7 +114,7 @@ const RegisterStudentUserAccount = async(req, res)=>{
  const RegisterData = ()=>{ 
     const  query = `INSERT INTO eduall_users_student_accounts(ed_user_std_account_userCode,  ed_user_std_account_studentCode, 
     ed_user_std_account_instituteCode) VALUES(?,?,?)`; 
-    const PARAMS = [student_account_usercode, student_account_studentcode ,  GetCurrentUserData(1)];  
+    const PARAMS = [student_account_usercode, student_account_studentcode ,  req.session.user.eduall_user_session_curentinstitute];  
      DATABASE.query(query, PARAMS, (err)=>{ 
         if(err) return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});  
         return res.status(200).json({msg:" success !"}); 

@@ -37,7 +37,7 @@ const DATABASERUN = (res, query, params, type)=>{
  
 const GetRacks = async(req, res)=>{
    const  query = 'SELECT * FROM eduall_library_racks WHERE ed_library_rack_deleted = 0 AND ed_library_rack_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -51,7 +51,7 @@ const GetSingleRack = async(req,res)=>{
 
 const RegisterRack = async(req, res)=>{
    const  query = `INSERT INTO eduall_library_racks(ed_library_rack_name, ed_library_rack_status, ed_library_rack_institute_code) VALUES(?,?,?)`;
-   const PARAMS = [req.body.rack_name, req.body.rack_status, GetCurrentUserData(1)];
+   const PARAMS = [req.body.rack_name, req.body.rack_status, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 1);
 }
  

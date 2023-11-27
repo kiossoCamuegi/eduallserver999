@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
  
 const RegisterPublication = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_posts(ed_post_for,  ed_post_user , ed_post_code, ed_post_description, ed_post_total_files) VALUES(?,?,?,?,?)`;
-   const PARAMS =  [req.body.post_for ,  GetCurrentUserData(0) , req.body.post_code , req.body.post_text, req.body.post_total_files];
+   const PARAMS =  [req.body.post_for ,  req.session.user.eduall_user_session_ID , req.body.post_code , req.body.post_text, req.body.post_total_files];
    DATABASERUN(res, query , PARAMS, 1);
 }
  
@@ -108,7 +108,7 @@ const GetUserPostsByContacts = async(req, res)=>{
                            share_usercode:share.ed_user_account_id, 
                            share_code:share.ed_post_share_id , 
                            share_date:share.ed_post_share_registerDate,
-                           share_byme:(GetCurrentUserData(0)*1 === share.ed_user_account_id*1)
+                           share_byme:(req.session.user.eduall_user_session_ID*1 === share.ed_user_account_id*1)
                         });
                      });
 
@@ -153,7 +153,7 @@ const GetUserPostsByContacts = async(req, res)=>{
                           reaction_usercode:reaction.ed_user_account_id, 
                           reaction_code:reaction.ed_post_like_id , 
                           reaction_date:reaction.ed_post_like_registerdate,
-                          reaction_byme:(GetCurrentUserData(0)*1 === reaction.ed_user_account_id*1)
+                          reaction_byme:(req.session.user.eduall_user_session_ID*1 === reaction.ed_user_account_id*1)
                        });
                     });
                     setPostsWithReactions({
@@ -195,7 +195,7 @@ const GetUserPostsByContacts = async(req, res)=>{
                               comment_code:comment.ed_post_comment_id,
                               comment_image:comment.ed_post_comment_image,
                               comment_date:comment.ed_post_comment_registerDate,
-                              comment_byme:(GetCurrentUserData(0)*1 === comment.ed_user_account_id*1)
+                              comment_byme:(req.session.user.eduall_user_session_ID*1 === comment.ed_user_account_id*1)
                           });
                      });
                      setPostsWithComments({
@@ -280,7 +280,7 @@ const GetUserPostsByContacts = async(req, res)=>{
    }
 
 
-   DATABASE.query(query, [GetCurrentUserData(0)] , (err, data)=>{  
+   DATABASE.query(query, [req.session.user.eduall_user_session_ID] , (err, data)=>{  
     if(!err){
        if(data.length >= 1){
           data.map((item, index)=>{
@@ -338,7 +338,7 @@ const GetCurrentUserPosts = async(req, res)=>{
    LEFT JOIN eduall_user_accounts AS USERS ON (POSTS.ed_post_user = USERS.ed_user_account_id)
    WHERE POSTS.ed_post_user = ?
    GROUP BY POSTS.ed_post_registerdate DESC `; 
-   const PARAMS = [GetCurrentUserData(0)];
+   const PARAMS = [req.session.user.eduall_user_session_ID];
    DATABASERUN(res, query , PARAMS, 0);
 }
 

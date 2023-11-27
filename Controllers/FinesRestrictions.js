@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetFinesRestrictions = async(req, res)=>{ 
       const  query = 'SELECT * FROM eduall_fines_restrictions WHERE ed_fine_restriction_deleted = 0 AND ed_fine_restriction_institute_code = ?';
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
      DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -61,7 +61,7 @@ const RegisterFineRestriction = async(req, res)=>{
    const  query = `INSERT INTO eduall_fines_restrictions(ed_fine_restriction_fineCode, ed_fine_restriction_for,
    ed_fine_restriction_type, ed_fine_restriction_for_elCode, ed_fine_restriction_institute_code) VALUES(?,?,?,?,?)`; 
    const PARAMS = [req.body.fine_restriction_fineCode, req.body.fine_restriction_for,
-   req.body.fine_restriction_type,req.body.fine_restriction_for_elCode , GetCurrentUserData(1)];
+   req.body.fine_restriction_type,req.body.fine_restriction_for_elCode , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
  

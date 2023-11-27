@@ -43,7 +43,7 @@ const DATABASERUN = (res, query, params, type)=>{
    const  query = `SELECT * FROM eduall_students LEFT JOIN eduall_class  ON eduall_students.ed_student_class =  eduall_class.ed_class_id  
    LEFT JOIN eduall_cicles ON ed_cicle_id = eduall_class.ed_class_cicle  WHERE ed_student_deleted = 0 AND  eduall_students.ed_student_institute_code = ? 
    ORDER BY ed_student_name ASC`;
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -79,7 +79,7 @@ const GetSingleStudentByIdentityCard = async(req, res)=>{
    const {IDENTITITYCARD} = req.params; 
    const  query = `SELECT * FROM eduall_students WHERE ed_student_deleted = 0 AND ed_student_identityCard = ?
    AND ed_student_institute_code = ?`; 
-   const PARAMS = [IDENTITITYCARD.toLowerCase() , GetCurrentUserData(1)];
+   const PARAMS = [IDENTITITYCARD.toLowerCase() , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -98,14 +98,14 @@ const GetSingleStudentByIdentityCard = async(req, res)=>{
    WHERE eduall_students.ed_student_deleted = 0 
    AND eduall_class.ed_class_id = ?  AND  eduall_students.ed_student_class = ?   AND  eduall_students.ed_student_institute_code = ?  
    ORDER BY eduall_students.ed_student_name ASC`;
-   const PARAMS = [CLASS, CLASS, GetCurrentUserData(1)];
+   const PARAMS = [CLASS, CLASS, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 }
  
  const RegisterStudent = async(req, res)=>{   
    const  query = `SELECT * FROM eduall_students WHERE ed_student_deleted = 0 AND ed_student_identityCard = ?
    AND ed_student_institute_code = ?`; 
-   const PARAMS = [req.body.student_identityCard.toLowerCase() , GetCurrentUserData(1)];
+   const PARAMS = [req.body.student_identityCard.toLowerCase() , req.session.user.eduall_user_session_curentinstitute];
    DATABASE.query(query, PARAMS, (err, rows)=>{ 
       if(err) return res.status(500).json(err);
        if(rows.length <= 0){
@@ -117,7 +117,7 @@ const GetSingleStudentByIdentityCard = async(req, res)=>{
             req.body.student_religion,  req.body.student_birthday, req.body.student_phone,  req.body.student_email, 
             req.body.student_class, req.body.student_code, (req.file ? "images/students/"+req.file.filename : ""),req.body.student_identityCard,  
             req.body.student_health_problems , req.body.student_health_problems_description ,req.body.student_status,
-            req.body.student_naturalness, GetCurrentUserData(1)];
+            req.body.student_naturalness, req.session.user.eduall_user_session_curentinstitute];
             DATABASERUN(res, query , PARAMS, 1);
        }else{
           res.status(500).json({msg:"Já existe um estudante cadastrado na instituição com este BI"}); 

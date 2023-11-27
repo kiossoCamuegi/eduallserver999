@@ -39,13 +39,13 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetStudentAttendance = async(req, res)=>{  
       const  query = `SELECT * FROM eduall_student_attendence WHERE ed_student_attd_deleted = 0 AND ed_student_attd_institute_code = ?`;
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
 const GetStudentAttendanceByTeacher = async(req,res)=>{ 
     const  query = `SELECT * FROM eduall_student_attendence WHERE ed_student_attd_deleted = 0 AND ed_student_attd_id = ? `; 
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 } 
 
@@ -116,7 +116,7 @@ const RegisterStudentAttendance = async(req, res)=>{
    const  query = `INSERT INTO eduall_student_attendence(ed_student_attd_class, ed_student_attd_student_code,ed_student_attd_timing, ed_student_attd_status,
     ed_student_attd_subject,ed_student_attd_teacherSubClass,ed_student_attd_date,ed_student_attd_institute_code) VALUES(?,?,?,?,?,?,?,?)`;
     const PARAMS = [req.body.student_attendance_class,req.body.student_attendance_code,req.body.student_attendance_time,req.body.student_attendance_status,
-    req.body.student_attendance_subject,req.body.student_attendance_subClass,req.body.student_attendance_date, GetCurrentUserData(1)] ;
+    req.body.student_attendance_subject,req.body.student_attendance_subClass,req.body.student_attendance_date, req.session.user.eduall_user_session_curentinstitute] ;
     DATABASERUN(res, query , PARAMS, 1);
 }
   

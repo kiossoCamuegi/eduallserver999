@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetTransportRoutes = async(req, res)=>{  
    const  query = 'SELECT * FROM eduall_transport_routes WHERE ed_transport_route_deleted = 0 AND  ed_transport_route_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0); 
 }
 
@@ -53,7 +53,7 @@ const GetsingleTransportRoute = async(req,res)=>{
 const RegisterTransportRoute = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_transport_routes(ed_transport_route_name, ed_transport_route_vehicle, ed_transport_route_map, ed_transport_route_description,  
    ed_transport_route_institute_code) VALUES(?,?,?,?,?)`;
-   const PARAMS = [req.body.route_name, req.body.route_vehicle, req.body.route_map, req.body.route_description, GetCurrentUserData(1)];
+   const PARAMS = [req.body.route_name, req.body.route_vehicle, req.body.route_map, req.body.route_description, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0); 
 }
 

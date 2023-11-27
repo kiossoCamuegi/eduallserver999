@@ -41,7 +41,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetCurrentUserConnections = async(req, res)=>{  
     const  query = 'SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND ed_user_account_id != ? ORDER BY ed_user_account_name ASC';
-    const PARAMS = [GetCurrentUserData(0)];
+    const PARAMS = [req.session.user.eduall_user_session_ID];
     DATABASERUN(res, query , PARAMS, 0);
 }
 

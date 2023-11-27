@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -41,7 +42,7 @@ const GetDeclarations = async(req, res)=>{
    const  query = `SELECT * FROM eduall_declarations LEFT JOIN eduall_students ON
    eduall_students.ed_student_id  =  eduall_declarations.ed_declaration_student_code
    WHERE eduall_declarations.ed_declaration_deleted = 0 AND eduall_declarations.ed_declaration_institute_code = ?`;
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -53,7 +54,7 @@ const GetSingleDeclaration = async(req,res)=>{
    eduall_students.ed_student_id  =  eduall_declarations.ed_declaration_student_code
    LEFT JOIN eduall_class ON eduall_class.ed_class_id  =  eduall_students.ed_student_class
    WHERE   ed_declaration_deleted = 0 AND ed_declaration_id = ?  AND eduall_declarations.ed_declaration_institute_code = ?`;
-   const PARAMS = [ID, GetCurrentUserData(1)];
+   const PARAMS = [ID, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
  }
  
@@ -64,7 +65,7 @@ const RegisterDeclaration = async(req, res)=>{
             ed_declaration_student_code:req.body.declaration_student ,  
             ed_declaration_effect:req.body.declaration_effect ,
             ed_declaration_with_marks:req.body.declaration_with_marks ,
-            ed_declaration_institute_code:GetCurrentUserData(1)
+            ed_declaration_institute_code:req.session.user.eduall_user_session_curentinstitute
        }
        try {
             await DeclarationModel.create(Data);
@@ -78,7 +79,7 @@ const RegisterDeclaration = async(req, res)=>{
     , ed_declaration_institute_code) VALUES(?,?,?,?)`;
    try {
       DB_SQLITE.run(query, [req.body.declaration_student ,req.body.declaration_effect ,
-      req.body.declaration_with_marks, GetCurrentUserData(1)], (err)=>{ 
+      req.body.declaration_with_marks, req.session.user.eduall_user_session_curentinstitute], (err)=>{ 
             if(err) return res.status(300).json({status:300, success:false, error:err});;
             return res.json("success");
       }); 

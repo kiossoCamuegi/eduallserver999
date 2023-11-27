@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -38,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetCoins = async(req, res)=>{
       const  query = 'SELECT * FROM eduall_coins WHERE ed_coin_deleted = 0 AND ed_coin_institute_code = ?';
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -55,7 +56,7 @@ const RegisterCoin = async(req, res)=>{
    ed_coin_exchange_value = ?, ed_coin_tax = ? ,  ed_coin_tax_value = ?, ed_coin_iva  = ?, ed_coin_institute_code = ?
    ) VALUES(?,?,?,?,?,?,?,?)`;
    const PARAMS =  [req.body.coin_title ,req.body.coin_value_in_euro,req.body.coin_value_in_dollar,
-   req.body.coin_exchange_value,req.body.coin_tax,req.body.coin_tax_value, req.body.coin_iva , GetCurrentUserData(1)]
+   req.body.coin_exchange_value,req.body.coin_tax,req.body.coin_tax_value, req.body.coin_iva , req.session.user.eduall_user_session_curentinstitute]
    DATABASERUN(res, query , PARAMS, 1);
 }
 

@@ -19,6 +19,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -40,7 +41,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetBooks = async(req, res)=>{ 
     const  query = 'SELECT * FROM eduall_library_books WHERE ed_library_book_deleted = 0 AND ed_library_book_institute_code = ?'; 
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -62,7 +63,7 @@ const Registerbook = async(req, res)=>{
     const PARAMS = [req.body.book_title, req.body.book_type,  req.body.book_publisher,   req.body.book_colection,  req.body.book_place_of_publication, 
     req.body.book_classification,  req.body.book_copy,  req.body.book_subtitle,  req.body.book_author,  req.body.book_subject, req.body.book_price, 
     req.body.book_year,  req.body.book_acquisition_date,  req.body.book_acquisition_type, req.body.book_provider,  req.body.book_pages,  
-    req.body.book_rack,  req.body.book_notes, req.file.path,GetCurrentUserData(1)];  
+    req.body.book_rack,  req.body.book_notes, req.file.path,req.session.user.eduall_user_session_curentinstitute];  
     DATABASERUN(res, query , PARAMS, 1);
 }
  

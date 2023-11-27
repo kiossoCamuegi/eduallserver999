@@ -59,12 +59,12 @@ const RegisterLessonSection = async(req, res)=>{
       LEFT JOIN eduall_employees ON  eduall_user_institutes.ed_user_institute_employeeCode = eduall_employees.ed_employee_id 
      WHERE eduall_user_institutes.ed_user_institute_deleted = 0 AND  eduall_user_institutes.ed_user_institute_userCode = ? 
      AND eduall_user_institutes.ed_user_institute_code = ?  AND eduall_employees.ed_employee_institute_code  = ?`;
-     DATABASE.query(query1, [GetCurrentUserData(0),  GetCurrentUserData(1),  GetCurrentUserData(1)], (err, rows)=>{ 
+     DATABASE.query(query1, [req.session.user.eduall_user_session_ID,  req.session.user.eduall_user_session_curentinstitute,  req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
       if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
       if(rows.length >= 1){ 
 
          const  query = `INSERT INTO eduall_lessons_sections(ed_lesson_section_title,  ed_lesson_section_creator,  ed_lesson_section_groupCode, ed_lesson_section_instituteCode) VALUES(?,?,?,?)`; 
-         const PARAMS =  [req.body.lesson_section_title, rows[0].ed_employee_id,  req.body.lesson_section_subClass, GetCurrentUserData(1)];
+         const PARAMS =  [req.body.lesson_section_title, rows[0].ed_employee_id,  req.body.lesson_section_subClass, req.session.user.eduall_user_session_curentinstitute];
          DATABASERUN(res, query , PARAMS, 1);
 
       }else{
@@ -84,12 +84,12 @@ const GetLessonsSectionBuyGroupCode = async(req, res)=>{
       LEFT JOIN eduall_employees ON  eduall_user_institutes.ed_user_institute_employeeCode = eduall_employees.ed_employee_id 
      WHERE eduall_user_institutes.ed_user_institute_deleted = 0 AND  eduall_user_institutes.ed_user_institute_userCode = ? 
      AND eduall_user_institutes.ed_user_institute_code = ?  AND eduall_employees.ed_employee_institute_code  = ?`;
-     DATABASE.query(query1, [GetCurrentUserData(0),  GetCurrentUserData(1),  GetCurrentUserData(1)], (err, rows)=>{ 
+     DATABASE.query(query1, [req.session.user.eduall_user_session_ID,  req.session.user.eduall_user_session_curentinstitute,  req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
       if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
       if(rows.length >= 1){ 
 
          const  query = `SELECT * FROM eduall_lessons_sections WHERE ed_lesson_section_groupCode = ? AND ed_lesson_section_instituteCode = ? AND ed_lesson_section_deleted = 0`; 
-         const PARAMS =  [GROUP, GetCurrentUserData(1)];
+         const PARAMS =  [GROUP, req.session.user.eduall_user_session_curentinstitute];
          DATABASERUN(res, query , PARAMS, 0);
          
 
@@ -110,7 +110,7 @@ const GetLessonsSectionByCreator = async(req, res)=>{
       LEFT JOIN eduall_employees ON  eduall_user_institutes.ed_user_institute_employeeCode = eduall_employees.ed_employee_id 
      WHERE eduall_user_institutes.ed_user_institute_deleted = 0 AND  eduall_user_institutes.ed_user_institute_userCode = ? 
      AND eduall_user_institutes.ed_user_institute_code = ?  AND eduall_employees.ed_employee_institute_code  = ?`;
-     DATABASE.query(query1, [GetCurrentUserData(0),  GetCurrentUserData(1),  GetCurrentUserData(1)], (err, rows)=>{ 
+     DATABASE.query(query1, [req.session.user.eduall_user_session_ID,  req.session.user.eduall_user_session_curentinstitute,  req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
       if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
 
     
@@ -118,7 +118,7 @@ const GetLessonsSectionByCreator = async(req, res)=>{
    
         
          const  query = `SELECT * FROM eduall_lessons_sections WHERE ed_lesson_section_creator = ? AND ed_lesson_section_instituteCode = ? AND ed_lesson_section_deleted = 0`; 
-         const PARAMS =  [rows[0].ed_employee_id, GetCurrentUserData(1)];
+         const PARAMS =  [rows[0].ed_employee_id, req.session.user.eduall_user_session_curentinstitute];
          DATABASERUN(res, query , PARAMS, 0);  
 
          
@@ -127,7 +127,7 @@ const GetLessonsSectionByCreator = async(req, res)=>{
       } 
   })
   } catch (error) { 
-      res.status(300).json([error, GetCurrentUserData(0),  GetCurrentUserData(1)]);
+      res.status(300).json([error, req.session.user.eduall_user_session_ID,  req.session.user.eduall_user_session_curentinstitute]);
   } 
 }
 
@@ -184,7 +184,7 @@ const LessonSectionUpdatePosition = async(req, res)=>{
       //########################
       }
 
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 } 
 

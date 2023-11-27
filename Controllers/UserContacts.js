@@ -44,7 +44,7 @@ const DATABASERUN = (res, query, params, type)=>{
 const CheckUserContactRequest = async(req,res)=>{
     const {CODE} = req.params;
     const  query = `SELECT * FROM  eduall_user_contacts WHERE ed_user_contact_userCode = ? AND ed_user_contact_contactCode  = ? `; 
-    const PARAMS = [GetCurrentUserData(0), CODE];
+    const PARAMS = [req.session.user.eduall_user_session_ID, CODE];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -60,12 +60,12 @@ const MakeUserContactRequest = async(req, res)=>{
       if(rows.length >= 1){ 
 
         const  query1 = `SELECT * FROM  eduall_user_contacts WHERE ed_user_contact_userCode = ? AND ed_user_contact_contactCode  = ? `;
-        DATABASE.query(query1, [GetCurrentUserData(0), CODE], (err, rows)=>{ 
+        DATABASE.query(query1, [req.session.user.eduall_user_session_ID, CODE], (err, rows)=>{ 
          if(err) return res.status(400).json({msg:"Erro ao estabelecer ligação com o servidor !"});
          if(rows.length <= 0){ 
     
             const  query2 = `INSERT INTO eduall_user_contacts(ed_user_contact_userCode,  ed_user_contact_contactCode) VALUES(?,?)`;
-            const PARAMS =  [GetCurrentUserData(0), CODE]
+            const PARAMS =  [req.session.user.eduall_user_session_ID, CODE]
             DATABASERUN(res, query2 , PARAMS, 1);
    
          }else{

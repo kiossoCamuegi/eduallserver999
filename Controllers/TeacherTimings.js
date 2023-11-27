@@ -44,7 +44,7 @@ const GetAllTeacherTiming = async(req, res)=>{
    LEFT JOIN eduall_subjects ON eduall_teacher_timings.ed_tch_timing_subject = eduall_subjects.ed_subject_id  
    LEFT JOIN eduall_class ON eduall_teacher_timings.ed_tch_timing_class = eduall_class.ed_class_id
    WHERE eduall_teacher_timings.ed_tch_timing_deleted = 0 AND eduall_teacher_timings.ed_tch_timing_teacher_code = ? AND  eduall_teacher_timings.ed_tch_timing_institute_code = ? `;
-   const PARAMS = [CODE, GetCurrentUserData(1)];
+   const PARAMS = [CODE, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 } 
 
@@ -56,7 +56,7 @@ const GetAllClassTimings = async(req, res)=>{
    LEFT JOIN eduall_subjects ON eduall_teacher_timings.ed_tch_timing_subject = eduall_subjects.ed_subject_id  
    LEFT JOIN eduall_class ON eduall_teacher_timings.ed_tch_timing_class = eduall_class.ed_class_id
    WHERE eduall_teacher_timings.ed_tch_timing_deleted = 0 AND eduall_teacher_timings.ed_tch_timing_class = ? AND  eduall_teacher_timings.ed_tch_timing_institute_code = ? `;
-   const PARAMS = [CODE, GetCurrentUserData(1)];
+   const PARAMS = [CODE, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 } 
 
@@ -84,7 +84,7 @@ const RegisterTeacherTiming = async(req, res)=>{
    const  query = `INSERT INTO eduall_teacher_timings(ed_tch_timing_code,ed_tch_timing_class,ed_tch_timing_subject, ed_tch_timing_teacher_code,
    ed_tch_timing_institute_code) VALUES(?,?,?,?,?)`; 
    const PARAMS = [req.body.teacher_timing_code, req.body.teacher_timing_class,req.body.teacher_timing_subject,
-   req.body.teacher_timing_teacher_code, GetCurrentUserData(1)];
+   req.body.teacher_timing_teacher_code, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 } 
 

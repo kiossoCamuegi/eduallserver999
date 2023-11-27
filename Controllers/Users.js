@@ -5,14 +5,12 @@ const path = require('path');
 const RefreshToken  = require("./RefreshToken");
 const nodeMailer = require("nodemailer"); 
 const CheckInternet = require("../config/CheckInternet");  
-const { DB_SQLITE, DATABASE } = require("../config/Database"); 
+const { DB_SQLITE, DATABASE, SESSION_STORE } = require("../config/Database"); 
 const { GetCurrentUserData } = require("./GetCurrentUserData");
 const SendEmailMessage = require("./SendEmailMessage");
 const { passwordStrength } = require('check-password-strength') 
 const CalculateRemainingDays = require("../config/CalculateRemainingDays");
-
-const {LocalStorage} =  require('node-localstorage'); 
-var localStorage = new LocalStorage('./scratch'); 
+ 
 
 
 const DATABASERUN = (res, query, params, type)=>{
@@ -55,17 +53,18 @@ const DATABASERUN = (res, query, params, type)=>{
  const UPDATEProfilePicture = async(req, res)=>{ 
     const  query = `UPDATE eduall_user_accounts SET ed_user_account_picture = ?
     WHERE ed_user_account_deleted = 0 AND ed_user_account_id = ?`;
-    const PARAMS = [(req.file ? "images/users/"+req.file.filename : ""), GetCurrentUserData(0)];
+    const PARAMS = [(req.file ? "images/users/"+req.file.filename : ""), req.session.user.eduall_user_session_ID];
     DATABASERUN(res, query , PARAMS, 1);  
  }
 
 
  const UPDATEProfileCoverImage = async(req, res)=>{ 
     const  query = `UPDATE  eduall_user_account_details SET	ed_user_account_detProfileCover = ? WHERE ed_user_account_detUSERID = ?`;
-    const PARAMS = [(req.file ? "images/users/covers/"+req.file.filename : ""), GetCurrentUserData(0)];
+    const PARAMS = [(req.file ? "images/users/covers/"+req.file.filename : ""), req.session.user.eduall_user_session_ID];
      DATABASERUN(res, query , PARAMS, 1);   
  }
 
+ 
 
 
 const getUsers = async(req, res)=>{  
@@ -106,9 +105,12 @@ const getCurrentUserInformation = async(req, res)=>{
     const  query = `SELECT * FROM eduall_user_accounts INNER JOIN 
     eduall_user_account_details ON 
     eduall_user_accounts.ed_user_account_id = eduall_user_account_details.ed_user_account_detUSERID
-    WHERE eduall_user_accounts.ed_user_account_deleted = 0 AND eduall_user_accounts.ed_user_account_id = ?`;
-    const PARAMS = [GetCurrentUserData(0)];
-    DATABASERUN(res, query , PARAMS, 0); 
+    WHERE eduall_user_accounts.ed_user_account_deleted = 0 AND eduall_user_accounts.ed_user_account_id = ?  `;
+    DATABASE.query(query, [req.session.user.eduall_user_session_ID], (err, userData)=>{ 
+        if(err) return res.json(err); 
+        if(!userData[0]) return  res.sendStatus(401); 
+        res.json(userData[0]);
+   });   
 }
 
 
@@ -521,19 +523,19 @@ const UpdateUserPassword = async(req, res)=>{
 
 
 
-const ChangeCurrentUserPassword = async(req, res)=>{
+const ChangeCurrentUserPassword = async(req, res)=>{ //123sivikiosso#
     const {ed_user_newpassword, ed_user_oldpassword} = req.body;   
     const salt = await bcrypt.genSalt(12);
     const hashPassword = await bcrypt.hash(ed_user_newpassword, salt);
     try {
         const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_user_account_id = ?  `;
-        DATABASE.query(query, [GetCurrentUserData(0)], (err, user)=>{ 
+        DATABASE.query(query, [req.session.user.eduall_user_session_ID], (err, user)=>{ 
             if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
             if(!user[0]) return res.status(400).json({msg:"Erro de sessão !"});  
              if(bcrypt.compareSync(ed_user_oldpassword , user[0].ed_user_account_password)){
                 if(passwordStrength(ed_user_newpassword).value.toLowerCase() !== "weak"){
                         const  query = `UPDATE eduall_user_accounts SET ed_user_account_password = ? WHERE ed_user_account_deleted = 0 AND ed_user_account_id = ?`; 
-                        DATABASE.query(query, [hashPassword, GetCurrentUserData(0)] , (err)=>{ 
+                        DATABASE.query(query, [hashPassword, req.session.user.eduall_user_session_ID] , (err)=>{ 
                             if(err) return res.status(500).json({msg:"Erro ao estabelecer ligação com o servidor !"});   
                             return res.status(200).json({msg:"success !"});   
                         });
@@ -748,193 +750,160 @@ const UPDATETOKEN  = async(refreshToken , cr_usercode)=>{
 }
  
 
-const Login = async(req, res)=>{  
-    res.clearCookie('refreshToken');  
-    try {  
+const Login = async(req, res)=>{
         const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      if((req.body.ed_user_account_email !== null && req.body.ed_user_account_email !== undefined) && (req.body.ed_user_account_password !== null && req.body.ed_user_account_password !== undefined )){
         if(emailRegexp.test(req.body.ed_user_account_email)){  
-        const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_user_account_email = ?  `;
-        DATABASE.query(query, [req.body.ed_user_account_email], (err, user)=>{ 
-            if(err) return res.json(err); 
-            if(!user[0]) return res.status(400).json({msg:"Conta não encomtrada !"});  
-             if(bcrypt.compareSync(req.body.ed_user_account_password , user[0].ed_user_account_password)){
-                const cr_usercode = user[0].ed_user_account_id;
-                const cr_code = user[0].ed_user_account_code;
-                const cr_username = user[0].ed_user_account_name;
-                const cr_useremail = user[0].ed_user_account_email; 
-                
-                const accessToken = jwt.sign({cr_usercode, cr_username, cr_useremail},
-                process.env.ACCESS_TOKEN_SECRET,{
-                    expiresIn:'20s'
-                }); 
-        
-                const refreshToken = jwt.sign({cr_usercode, cr_code, cr_username, cr_useremail},
-                process.env.REFRESH_TOKEN_SECRET,{
-                    expiresIn:'1d'
-                }); 
- 
-                if(UPDATETOKEN(refreshToken , cr_usercode)){
-                    res.cookie('refreshToken', refreshToken,{
-                        httpOnly:true,
-                        maxAge:24 * 60 * 60 * 1000
-                    }); 
-                    localStorage.setItem('eduall_user_token', refreshToken); 
-
-                     console.log("goodboy ...")
-                     const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
-                     const PARAMS5 = [cr_usercode, 2, "email"];
-                     DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
-                         if(err) return res.json(err); 
-                         res.status(200).json({accessToken});
+            const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_user_account_email = ?  `;
+            DATABASE.query(query, [req.body.ed_user_account_email], (err, user)=>{ 
+                if(err) return res.json(err);  
+              if(!user[0]) return res.status(400).json({msg:"Conta não encomtrada !"});  
+                  if(bcrypt.compareSync(req.body.ed_user_account_password , user[0].ed_user_account_password)){
+                    const cr_usercode = user[0].ed_user_account_id;
+                    const cr_code = user[0].ed_user_account_code;
+                    const cr_username = user[0].ed_user_account_name;
+                    const cr_useremail = user[0].ed_user_account_email; 
+                    const cr_user_largecode = user[0].ed_user_account_code;
+                    const cr_usertype = 1;
+    
+                    const accessToken = jwt.sign({cr_usercode, cr_user_largecode, cr_username, cr_useremail, cr_usertype},
+                     process.env.ACCESS_TOKEN_SECRET,{
+                        expiresIn:'15s'
                      });
-                     
-                }else{
-                    console.log("error - 02")
-                    res.status(400).json({msg:"Credenciais invalidas !"});   
-                } 
-             }else{
-                console.log("error - 03")
-                res.status(400).json({msg:"Credenciais invalidas !"});  
-             }  
-       });  
-        }else{
-            // login with username 
-            const  query2 = `SELECT * FROM  eduall_employees LEFT JOIN  eduall_user_accounts ON
-            eduall_employees.ed_employee_email = eduall_user_accounts.ed_user_account_email  
-            LEFT JOIN  eduall_system_accounts ON  eduall_system_accounts.ed_system_account_employee = eduall_employees.ed_employee_id 
-
-            LEFT JOIN eduall_institutes ON eduall_institutes.ed_institute_code = eduall_system_accounts.ed_system_account_institute_code  
-            LEFT JOIN eduall_institutes_licences ON eduall_institutes_licences.ed_institute_licence_instituteCode = eduall_system_accounts.ed_system_account_institute_code
-
-            WHERE  eduall_user_accounts.ed_user_account_deleted = 0 AND 
-            eduall_employees.ed_employee_deleted = 0 AND  eduall_system_accounts.ed_system_account_name = ?`;
-            DATABASE.query(query2, [req.body.ed_user_account_email.toLowerCase()], (err, rows)=>{ 
-                if(err){
-                  console.log(err)
-                  console.log("error - 1")
-                 res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
-                }
-               if(rows || rows !== null || rows !== undefined){  
-               if((typeof rows) === "object"){
-                if(rows.length >= 1){ 
-                    const {ed_user_account_email, ed_user_account_password} = rows[0]; 
-                     console.log(ed_user_account_email, ed_user_account_password);  
- 
-              
-                    if(ed_user_account_password !==  null){
-                        if(bcrypt.compareSync(req.body.ed_user_account_password , ed_user_account_password)){
-                            const cr_usercode = rows[0].ed_user_account_id;
-                            const cr_code = rows[0].ed_user_account_code;
-                            const cr_username = rows[0].ed_user_account_name;
-                            const cr_useremail = rows[0].ed_user_account_email;  
-                            
-                            const accessToken = jwt.sign({cr_usercode, cr_username, cr_useremail},
-                            process.env.ACCESS_TOKEN_SECRET,{
-                                expiresIn:'20s'
-                            }); 
-                    
-                            const refreshToken = jwt.sign({cr_usercode, cr_code, cr_username, cr_useremail},
-                            process.env.REFRESH_TOKEN_SECRET,{
-                                expiresIn:'1d'
-                            }); 
-             
-                            if(UPDATETOKEN(refreshToken , cr_usercode)){
-                                res.cookie('refreshToken', refreshToken,{httpOnly:true,  maxAge:24 * 60 * 60 * 1000 }); 
-                                 localStorage.setItem('eduall_user_token', refreshToken); 
+    
+                    const refreshToken = jwt.sign({cr_usercode, cr_code, cr_username, cr_useremail},
+                    process.env.REFRESH_TOKEN_SECRET,{
+                        expiresIn:'1d'
+                    }); 
      
-                                res.cookie('AdminUsername', rows[0].ed_system_account_name.toLowerCase(),{httpOnly:true,  maxAge:24 * 60 * 60 * 1000  }); 
-                                 localStorage.setItem('AdminUsername', rows[0].ed_system_account_name.toLowerCase());   
-     
-                                 if(CalculateRemainingDays(rows[0].ed_institute_licence_startDate, rows[0].ed_institute_licence_endDate) <= 0){ 
-                                 console.log("*********** error making login ")
-                                   res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença ****!"});
-                                 
-                                 }else{
-                                     console.log("**********Good job making login *******************");
-                                     
-                                 const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
-                                 const PARAMS5 = [cr_usercode, 2, "username"];
-                                 DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
-                                     if(err) return res.status(400).json(err); 
-                                     console.log("You are about to login with username my dear friend 😒😁🌹🤷‍♀️💖")
-                                     res.status(200).json({accessToken});
-                                 });  
-     
-                              }
-                            }else{
-                             console.log("error - 2")
-                                res.status(400).json({msg:"Credenciais invalidas !"});   
-                            }  
-     
-                         }else{
-                            res.status(400).json({msg:"Credenciais invalidas !"});  
-                            console.log("error - 3")
-                         }  
-                    }else{
-                        res.status(400).json({msg:"Esta conta não tem uma password associada !"});     
+                   if(refreshToken !== undefined){
+                    if(UPDATETOKEN(refreshToken , cr_usercode)){  
+                        const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
+                        const PARAMS5 = [cr_usercode, 2, "email"];
+                        DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
+                            if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
+                            console.log("You are about to login with email and password my Nigga 😁😘🤷‍♂️🤷‍♂️😜");
+                            req.session.user.eduall_user_session_refreshToken = refreshToken;   
+                            req.session.user.eduall_user_sessesion_ID = cr_usercode;
+                            setTimeout(() => {
+                               res.status(200).json({accessToken});
+                            }, 500);
+                        });
+                        
+                   }else{
+                       console.log("error - 02")
+                       res.status(400).json({msg:"Credenciais invalidas !"});   
+                   } 
+                   }else{
+                    res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor  !"});
+                   }
+                 }else{
+                    console.log("error - 03")
+                    res.status(400).json({msg:"Credenciais invalidas !"});  
+                 }  
+              });  
+            }else{
+                // login with username 
+                const  query2 = `SELECT * FROM  eduall_employees LEFT JOIN  eduall_user_accounts ON
+                eduall_employees.ed_employee_email = eduall_user_accounts.ed_user_account_email  
+                LEFT JOIN  eduall_system_accounts ON  eduall_system_accounts.ed_system_account_employee = eduall_employees.ed_employee_id 
+    
+                LEFT JOIN eduall_institutes ON eduall_institutes.ed_institute_code = eduall_system_accounts.ed_system_account_institute_code  
+                LEFT JOIN eduall_institutes_licences ON eduall_institutes_licences.ed_institute_licence_instituteCode = eduall_system_accounts.ed_system_account_institute_code
+    
+                WHERE  eduall_user_accounts.ed_user_account_deleted = 0 AND 
+                eduall_employees.ed_employee_deleted = 0 AND  eduall_system_accounts.ed_system_account_name = ?`; 
+                DATABASE.query(query2, [req.body.ed_user_account_email], (err, rows)=>{ 
+                    if(err){
+                      console.log(err)
+                      console.log("error - 1")
+                     res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
                     }
-                  }else{
-                    console.log("Not founded")
-                    res.status(400).json({msg:"Credenciais invalidas !"});     
-                } 
-               }else{
-                res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 2 !"});
-               }
-               }else{
-                res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 8 !"});
-               }
-            })
-        } 
-    } catch (error) {
-        console.log("error - 4")
-        res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 1 !"});
-    }  
+    
+    
+                   if(rows || rows !== null || rows !== undefined){  
+                   if((typeof rows) === "object"){
+                    if(rows.length >= 1){ 
+                        const {ed_user_account_email, ed_user_account_password} = rows[0];  
+                        if(ed_user_account_password !==  null){
+                            if(bcrypt.compareSync(req.body.ed_user_account_password , ed_user_account_password)){
+                                const cr_usercode = rows[0].ed_user_account_id;
+                                const cr_code = rows[0].ed_user_account_code;
+                                const cr_username = rows[0].ed_user_account_name;
+                                const cr_useremail = rows[0].ed_user_account_email;   
+                                 const cr_user_largecode = rows[0].ed_user_account_code;
+                                const cr_usertype = 0;
+                                
+                                const accessToken = jwt.sign({cr_usercode, cr_user_largecode, cr_username, cr_useremail, cr_usertype},
+                                process.env.ACCESS_TOKEN_SECRET,{
+                                    expiresIn:'15s'
+                                });
+    
+                        
+                                const refreshToken = jwt.sign({cr_usercode, cr_code, cr_username, cr_useremail},
+                                process.env.REFRESH_TOKEN_SECRET,{
+                                    expiresIn:'1d'
+                                }); 
+                 
+                               if(refreshToken !== undefined){
+                                if(UPDATETOKEN(refreshToken , cr_usercode)){ 
+                                
+         
+                                    if(CalculateRemainingDays(rows[0].ed_institute_licence_startDate, rows[0].ed_institute_licence_endDate) <= 0){ 
+                                    console.log("*********** error making login ")
+                                      res.status(300).json({msg:"Acesso bloqueiado, renove a sua licença ****!"});
+                                    
+                                    }else{ 
+                                    const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
+                                    const PARAMS5 = [cr_usercode, 2, "username"];
+                                    DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
+                                        if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
+                                        console.log("You are about to login with username my dear friend 😒😁🌹🤷‍♀️💖")
+                                       req.session.user = {
+                                           eduall_user_session_refreshToken:refreshToken,
+                                           eduall_user_session_username:rows[0].ed_system_account_name,
+                                           eduall_user_session_curentinstitute:rows[0].ed_system_account_institute_code
+                                       };   
+                                       console.log(req.session)
+                                       res.status(200).json({accessToken, sessions:req.session}); 
+                                    });  
+        
+                                 }
+                               }else{
+                                console.log("error - 2")
+                                   res.status(400).json({msg:"Credenciais invalidas !"});   
+                               } 
+                               }else{
+                                res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
+                               } 
+         
+                             }else{
+                                res.status(400).json({msg:"Credenciais invalidas !"});  
+                                console.log("error - 3#####################")
+                             }  
+                        }else{
+                            res.status(400).json({msg:"Esta conta não tem uma password associada !"});     
+                        }
+                      }else{
+                        console.log("Not founded")
+                        res.status(400).json({msg:"Credenciais invalidas !"});     
+                    } 
+                   }else{
+                   // res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 2 !"});
+                   }
+                   }else{
+                    res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 8 !"});
+                   }
+    
+    
+                })
+            } 
+      }else{
+         return res.status(400).json({msg:"Preencha corretamente os campos !"});  
+      }
 }
 
 
-const Logout = async(req, res)=>{
-    const refreshToken = req.cookies.refreshToken ? req.cookies.refreshToken :
-    (localStorage.getItem("eduall_user_token") ? localStorage.getItem("eduall_user_token") : false) ;
-    if(!refreshToken) return res.sendStatus(204); 
-  if(CheckInternet() === true){
-    try {
-        const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_usertoken = ?  `;
-        DATABASE.query(query, [refreshToken], (err, user)=>{ 
-            if(err) return res.json(err); 
-            if(!user[0]) return res.sendStatus(204);
-            const cr_usercode = user[0].ed_user_account_id;
-             if(UPDATETOKEN(null, cr_usercode)) {
-                res.clearCookie('refreshToken');
-                localStorage.clear();
-                return res.sendStatus(200);  
-             } else {
-                res.sendStatus(204);
-             }
-            });  
-    } catch (error) {
-        res.sendStatus(204);
-    }  
-  } else {
-    try {
-        const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_usertoken = ?  `;
-        DB_SQLITE.all(query, [refreshToken], (err, user)=>{ 
-            if(err) return res.json(err); 
-            if(!user[0]) return res.sendStatus(204);
-            const cr_usercode = user[0].ed_user_account_id;
-             if(UPDATETOKEN(null, cr_usercode)) {
-                res.clearCookie('refreshToken');
-                localStorage.clear();
-                return res.sendStatus(200);  
-             } else {
-                res.sendStatus(204);
-             }
-            });  
-    } catch (error) {
-        res.sendStatus(204);
-    }   
-  }
-}
- 
 
 const storage_user_picture = multer.diskStorage({
     destination:'images/users',
@@ -963,4 +932,4 @@ const storage_user_background_picture = multer.diskStorage({
 
 module.exports = {getUsers, UserPasswordReset, uploadUserAccountBackgroundPicture, CheckUserAccountVerificationCode, UpdateUserPassword, 
  getSingleUserImageData, UserAccountDelete, getSingleUserData,  CheckExistentEmail, GetUserAccounAccess, UPDATEProfilePicture,UPDATEProfileCoverImage,
- RegisterUserAccount, UpdateUserAccount, Login, Logout, uploadUserAccountPicture, getCurrentUserInformation, ChangeCurrentUserPassword, SearchUsers};
+ RegisterUserAccount, UpdateUserAccount, Login, uploadUserAccountPicture, getCurrentUserInformation, ChangeCurrentUserPassword, SearchUsers};

@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetTimings = async(req, res)=>{ 
     const  query = 'SELECT * FROM eduall_timing WHERE ed_timing_deleted = 0 AND  ed_timing_institute_code = ?'; 
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);  
 } 
 
@@ -54,7 +54,7 @@ const RegisterTiming = async(req, res)=>{
    const  query = `INSERT INTO eduall_timing(ed_timing_hour_start,ed_timing_minute_start,ed_timing_hour_end,
    ed_timing_minute_end,ed_timing_institute_code) VALUES(?,?,?,?,?)`;
    const PARAMS = [req.body.timing_hour_start,req.body.timing_minute_start,
-   req.body.timing_hour_end,req.body.timing_minute_end, GetCurrentUserData(1)];
+   req.body.timing_hour_end,req.body.timing_minute_end, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }  
 

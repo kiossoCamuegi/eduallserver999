@@ -38,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetTransportMaintenances = async(req, res)=>{ 
       const  query = 'SELECT * FROM eduall_transport_maintenance WHERE ed_transport_maintenance_deleted = 0 AND  ed_transport_maintenance_institute_code = ?';
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -52,7 +52,7 @@ const GetsingleTransportMaintenance = async(req,res)=>{
 const RegisterTransportMaintenance = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_transport_maintenance(ed_transport_maintenance_vehicle,ed_transport_maintenance_description,
     ed_transport_maintenance_institute_code) VALUES(?,?,?)`;
-    const PARAMS = [req.body.maintenance_vehicle, req.body.maintenance_description, GetCurrentUserData(1)];
+    const PARAMS = [req.body.maintenance_vehicle, req.body.maintenance_description, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 1);  
 }
 

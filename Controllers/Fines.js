@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -38,14 +39,14 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetFines = async(req, res)=>{ 
    const  query = 'SELECT * FROM eduall_fines WHERE ed_fine_deleted = 0 AND ed_fine_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 }
 
 const GetSingleFine = async(req,res)=>{
     const {ID} = req.params; 
    const  query = 'SELECT * FROM eduall_fines WHERE ed_fine_deleted = 0 AND ed_fine_id = ? ';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
  } 
  
@@ -59,7 +60,7 @@ const GetSingleFineByCode = async(req,res)=>{
 const GetSingleFineByService = async(req,res)=>{
      const {SERVICE} = req.params; 
      const  query = 'SELECT * FROM eduall_fines WHERE ed_fine_deleted = 0 AND ed_fine_service = ? AND ed_fine_institute_code = ? '; 
-     const PARAMS = [SERVICE, GetCurrentUserData(1)];
+     const PARAMS = [SERVICE, req.session.user.eduall_user_session_curentinstitute];
      DATABASERUN(res, query , PARAMS, 0);
 } 
 
@@ -68,7 +69,7 @@ const RegisterFine = async(req, res)=>{
    ed_fine_increment_value,ed_fine_parentsChildrens,ed_fine_daysafterprevmonth, ed_fine_institute_code) VALUES(?,?,?,?,?,?,?,?,?)`; 
    const PARAMS = [req.body.fine_code,req.body.fine_servicecode,req.body.fine_valuetype,req.body.fine_value, 
    req.body.fine_scholarshipholders, req.body.fine_Incdaysafterprevmonth,req.body.fine_forparentswthMrCh,
-   req.body.fine_daysafterprevmonth, GetCurrentUserData(1)];
+   req.body.fine_daysafterprevmonth, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }  
 

@@ -37,7 +37,7 @@ const DATABASERUN = (res, query, params, type)=>{
  
 const GetFinesStudents = async(req, res)=>{ 
       const  query = 'SELECT * FROM eduall_fines_students WHERE ed_fine_student_deleted = 0 AND ed_fine_student_institute_code = ?'; 
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -57,7 +57,7 @@ const GetAllFinesStudentByCode = async(req,res)=>{
 
 const RegisterFineStudent = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_fines_students(ed_fine_student_id, ed_fine_student_fineCode, ed_fine_student_institute_code) VALUES(?,?,?)`;
-   const PARAMS = [req.body.fine_student_code, req.body.fine_student_fineCode , GetCurrentUserData(1)];
+   const PARAMS = [req.body.fine_student_code, req.body.fine_student_fineCode , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
 

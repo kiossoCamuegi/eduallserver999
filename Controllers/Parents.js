@@ -41,7 +41,7 @@ const DATABASERUN = (res, query, params, type)=>{
  
 const Getparents = async(req, res)=>{ 
       const  query = 'SELECT * FROM eduall_parents WHERE ed_parent_deleted = 0 AND  ed_parent_institute_code = ? ORDER BY ed_parent_name ASC'; 
-     const PARAMS = [GetCurrentUserData(1)];
+     const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -59,7 +59,7 @@ const RegisterParent = async(req, res)=>{
    VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`;   
    const PARAMS =  [req.body.parent_name, req.body.parent_code , req.body.parent_email, req.body.parent_phone, 
    req.body.parent_phone2,req.body.parent_job,req.body.parent_address, req.body.parent_nacionality ,
-   req.body.parent_gender,(req.file ? "images/students/"+req.file.filename : ""),req.body.parent_degree_of_kinship, GetCurrentUserData(1)];
+   req.body.parent_gender,(req.file ? "images/students/"+req.file.filename : ""),req.body.parent_degree_of_kinship, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);        
 }
 

@@ -37,7 +37,7 @@ const DATABASERUN = (res, query, params, type)=>{
  
 const RegisterProfilePageVisitor = async(req, res)=>{
    const  query = `INSERT INTO eduall_profile_page_views(ed_pp_vw_type, ed_pp_vw_code, ed_pp_vw_user) VALUES(?,?,?)`;
-   const PARAMS = [req.body.page_type, req.body.page_code, GetCurrentUserData(0)];
+   const PARAMS = [req.body.page_type, req.body.page_code, req.session.user.eduall_user_session_ID];
    DATABASERUN(res, query , PARAMS, 1);
 }
  

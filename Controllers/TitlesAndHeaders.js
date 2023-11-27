@@ -38,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetTitleAndHeaders = async(req, res)=>{ 
    const  query = 'SELECT * FROM eduall_titles WHERE ed_title_deleted = 0 AND  ed_title_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -52,7 +52,7 @@ const GetSingleTitleAndHeader = async(req,res)=>{
 const RegisterTitleAndHeader = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_titles(ed_title_name, ed_title_for, ed_title_description ,
    ed_title_institute_code) VALUES(?,?,?,?)`;
-   const PARAMS = [req.body.title_name, req.body.title_for, req.body.title_description, GetCurrentUserData(1)];
+   const PARAMS = [req.body.title_name, req.body.title_for, req.body.title_description, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
  }
 

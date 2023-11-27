@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetStudentEnrollments = async(req, res)=>{
     const  query = 'SELECT * FROM eduall_student_enrollment WHERE ed_student_enrollment_deleted = 0 AND ed_enroll_institute_code = ?';
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0); 
 }
 

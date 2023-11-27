@@ -41,7 +41,7 @@ const GetExamsCalendar = async(req,res)=>{
       eduall_student_exams.ed_student_exam_subject = eduall_subjects.ed_subject_id  LEFT JOIN eduall_class ON
       eduall_student_exams.ed_student_exam_class = eduall_class.ed_class_id 
       WHERE eduall_student_exams.ed_student_exam_deleted  = 0 AND eduall_student_exams.ed_student_exam_institute_code = ?`;
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -69,7 +69,7 @@ const GetSingleExamCalendar = async(req,res)=>{
 
 const RegisterStudentExamCalendar = async(req, res)=>{
    const  query = `INSERT INTO eduall_student_exams(ed_student_exam_class, ed_student_exam_subject, ed_student_exam_date, ed_student_exam_time, ed_student_exam_institute_code) VALUES(?,?,?,?,?)`; 
-   const PARAMS = [req.body.exam_calendar_class, req.body.exam_calendar_subject , req.body.exam_calendar_date ,  req.body.exam_calendar_time,,  GetCurrentUserData(1)];
+   const PARAMS = [req.body.exam_calendar_class, req.body.exam_calendar_subject , req.body.exam_calendar_date ,  req.body.exam_calendar_time,,  req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

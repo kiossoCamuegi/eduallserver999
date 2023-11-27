@@ -41,7 +41,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
  const GetTransportDrivers = async(req, res)=>{ 
    const  query = 'SELECT * FROM eduall_transport_drivers WHERE ed_transport_driver_deleted = 0 AND  ed_transport_driver_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -59,7 +59,7 @@ const RegisterTransportDriver = async(req, res)=>{
    ed_transport_driver_picture, ed_transport_driver_institute_code) VALUES(?,?,?,?,?,?,?,?,?,?,?)`;
    const PARAMS = [req.body.driver_name,  req.body.driver_neighborhood,req.body.driver_status,req.body.driver_city, 
    req.body.driver_email,req.body.driver_nif, req.body.driver_phone, req.body.driver_identification_number, 
-   req.body.driver_address, req.file.path, GetCurrentUserData(1)];
+   req.body.driver_address, req.file.path, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

@@ -54,7 +54,7 @@ const GetSingleTaskAndProject = async(req, res)=>{
 
 const GetAllTasksAndProjects = async(req, res)=>{ 
    const  query = 'SELECT * FROM eduall_task_and_projects WHERE ed_task_and_project_deleted = 0 AND ed_task_and_project_institute_code = ? ';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -64,7 +64,7 @@ const RegisterTaskAndProject = async(req, res)=>{
    ed_task_and_project_description,   ed_task_and_project_type, ed_task_and_project_startDate, ed_task_and_project_endDate, ed_task_and_project_color,
    ed_task_and_project_institute_code) VALUES(?,?,?,?,?,?,?,?,?,?)`;
    const PARAMS = [req.body.tsk_pr_title, req.body.tsk_pr_subtitle,req.body.tsk_pr_creator,req.body.tsk_pr_code,req.body.tsk_pr_description, 
-   req.body.tsk_pr_type,req.body.tsk_pr_startDate,req.body.tsk_pr_endDate,req.body.tsk_pr_color, GetCurrentUserData(1)];
+   req.body.tsk_pr_type,req.body.tsk_pr_startDate,req.body.tsk_pr_endDate,req.body.tsk_pr_color, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

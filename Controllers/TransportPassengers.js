@@ -49,7 +49,7 @@ const GetTransportPassengers = async(req, res)=>{
    LEFT JOIN eduall_academic_year ON  eduall_class.ed_class_year = eduall_academic_year.ed_academic_year_id
    
    WHERE eduall_transport_passengers.ed_transport_passenger_deleted = 0 AND  eduall_transport_passengers.ed_transport_passenger_institute_code = ?`;
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -76,7 +76,7 @@ const GetTransportsinglePassengerByStudentId = async(req,res)=>{
 const RegisterTransportPassenger = async(req, res)=>{
    const  query = `INSERT INTO eduall_transport_passengers(ed_transport_passenger_code,ed_transport_passenger_service,
    ed_transport_passenger_stop,ed_transport_passenger_institute_code) VALUES(?,?,?,?)`;
-   const PARAMS = [req.body.passenger_code, req.body.passenger_service, req.body.passenger_stop , GetCurrentUserData(1)];
+   const PARAMS = [req.body.passenger_code, req.body.passenger_service, req.body.passenger_stop , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

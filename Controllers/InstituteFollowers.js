@@ -44,7 +44,7 @@ const DATABASERUN = (res, query, params, type)=>{
 const CheckIfFollowingInstitute = async(req,res)=>{
     const {CODE} = req.params;
     const  query = `SELECT * FROM  eduall_institute_followers WHERE ed_institute_follower_user = ? AND ed_institute_follower_code  = ? `; 
-    const PARAMS = [GetCurrentUserData(0), CODE];
+    const PARAMS = [req.session.user.eduall_user_session_ID, CODE];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -71,12 +71,12 @@ const FollowInstitute = async(req, res)=>{
       if(rows.length >= 1){ 
 
         const  query1 = `SELECT * FROM  eduall_institute_followers WHERE ed_institute_follower_user = ? AND ed_institute_follower_code  = ? `;
-        DATABASE.query(query1, [GetCurrentUserData(0), CODE], (err, rows)=>{ 
+        DATABASE.query(query1, [req.session.user.eduall_user_session_ID, CODE], (err, rows)=>{ 
          if(err) return res.status(400).json({msg:"Erro ao estabelecer ligação com o servidor !"});
          if(rows.length <= 0){ 
     
             const  query2 = `INSERT INTO eduall_institute_followers(ed_institute_follower_user,  ed_institute_follower_code) VALUES(?,?)`;
-            const PARAMS =  [GetCurrentUserData(0), CODE]
+            const PARAMS =  [req.session.user.eduall_user_session_ID, CODE]
             DATABASERUN(res, query2 , PARAMS, 1);
    
          }else{

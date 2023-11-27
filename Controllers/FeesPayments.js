@@ -16,7 +16,7 @@ const DATABASERUN = (res, query, params, type)=>{
                if(err) return res.status(300).json({status:300, success:false, error:err});;
                return res.json("success");
              }); 
-         } 
+         }  
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -42,7 +42,7 @@ const GetFeepayments = async(req, res)=>{
      LEFT JOIN eduall_services ON eduall_fees_payments.ed_fee_payment_service = eduall_services.ed_service_id
      WHERE eduall_fees_payments.ed_fee_payment_deleted = 0 AND eduall_students.ed_student_deleted = 0 AND eduall_services.ed_service_deleted = 0
      AND eduall_fees_payments.ed_fee_payment_institute_code = ?`; 
-     const PARAMS = [GetCurrentUserData(1)];
+     const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
      DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -67,7 +67,7 @@ const GetSinglePaidMonth = async(req,res)=>{
     LEFT JOIN eduall_students ON eduall_fees_payments.ed_fee_payment_student = eduall_students.ed_student_id
     LEFT JOIN eduall_services ON eduall_fees_payments.ed_fee_payment_service  =  eduall_services.ed_service_id
     WHERE ed_fee_payment_deleted = 0 AND ed_fee_payment_id = ? AND ed_fee_payment_institute_code = ?`; 
-    const PARAMS = [ID, GetCurrentUserData(1)];
+    const PARAMS = [ID, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 } 
 
@@ -75,9 +75,11 @@ const GetSingleStudentFees = async(req,res)=>{
    const {ACADEMICYEAR, STUDENTCODE} = req.params; 
    const  query = `SELECT * FROM eduall_fees_payments 
    LEFT JOIN eduall_services ON eduall_fees_payments.ed_fee_payment_service  =  eduall_services.ed_service_id
+   LEFT JOIN eduall_students ON eduall_students.ed_student_id =  eduall_fees_payments.ed_fee_payment_student
    WHERE eduall_fees_payments.ed_fee_payment_deleted = 0
    AND eduall_fees_payments.ed_fee_payment_student = ? AND eduall_fees_payments.ed_fee_payment_academic_year = ? AND ed_fee_payment_institute_code = ?`;  
-   const PARAMS = [STUDENTCODE, ACADEMICYEAR ,GetCurrentUserData(1) ];
+   const PARAMS = [STUDENTCODE, ACADEMICYEAR ,req.session.user.eduall_user_session_curentinstitute];
+   console.log(req.session.user.eduall_user_session_curentinstitute)
    DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -91,7 +93,7 @@ const RegisterFeepayment = async(req, res)=>{
    req.body.feepayment_months,req.body.feepayment_discount,req.body.feepayment_type,
    req.body.feepayment_bank, req.body.feepayment_academic_year,req.body.feepayment_place,req.body.feepayment_balance,
    req.body.feepayment_bordereux_number,req.body.feepayment_iva,req.body.feepayment_code,
-   req.body.feepayment_fineType, req.body.feepayment_fineValue, GetCurrentUserData(1)];
+   req.body.feepayment_fineType, req.body.feepayment_fineValue, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
  

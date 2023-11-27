@@ -46,7 +46,7 @@ const GetMembersByProject = async(req, res)=>{
 const RegisterTaskAndProjectMember = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_tasks_and_projects_members(ed_task_and_project_member_code , ed_task_and_project_member_projectCode, 
    ed_task_and_project_member_type , ed_task_and_project_member_institute_code) VALUES(?,?,?,?)`;
-   const PARAMS =  [req.body.task_pr_member_code, req.body.task_pr_member_project,req.body.task_pr_member_type , GetCurrentUserData(1)];
+   const PARAMS =  [req.body.task_pr_member_code, req.body.task_pr_member_project,req.body.task_pr_member_type , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

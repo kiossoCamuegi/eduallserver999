@@ -41,7 +41,7 @@ const GetStudentTransferences = async(req, res)=>{
    const  query = `SELECT * FROM eduall_student_transference 
    LEFT JOIN eduall_students ON eduall_students.ed_student_id =  eduall_student_transference.ed_student_transference_code
    WHERE eduall_student_transference.ed_student_transference_deleted = 0 AND eduall_student_transference.ed_student_transference_institute_code = ?`;
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -58,7 +58,7 @@ const RegisterStudentTransference = async(req, res)=>{
    const  query = `INSERT INTO eduall_student_transference(ed_student_transference_code , ed_student_transference_reason,
    ed_student_transference_to, ed_student_transference_with_marks, ed_student_transference_description,ed_student_transference_institute_code) VALUES(?,?,?,?,?,?)`; 
    const PARAMS =  [req.body.transference_student, req.body.transference_reason,req.body.transference_place,
-   req.body.transference_with_marks, req.body.transference_description, GetCurrentUserData(1)];
+   req.body.transference_with_marks, req.body.transference_description, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
  

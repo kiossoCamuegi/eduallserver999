@@ -13,7 +13,7 @@ const UpdateCurrentUserInstitute = async(req, res)=>{
         if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
         if(rows.length >= 1){ 
 
-            localStorage.setItem('eduall_user_curentinstitute', CODE); 
+            req.session.user.eduall_user_session_curentinstitute =   CODE; 
             res.status(200).json("Informação atualizada com sucesso !"); 
 
         }else{

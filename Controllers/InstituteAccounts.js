@@ -51,7 +51,7 @@ const GetInstituteUserAccounts = async(req, res)=>{
     eduall_system_accounts.ed_system_account_employee =  eduall_employees.ed_employee_id
     WHERE  eduall_system_accounts.ed_system_account_deleted = 0 AND  eduall_employees.ed_employee_deleted = 0 AND
     eduall_system_accounts.ed_system_account_institute_code = ? ORDER BY eduall_employees.ed_employee_name ASC`;
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -61,7 +61,7 @@ const GetInstituteUserAccounts = async(req, res)=>{
 const RegisterInstituteUserAccount = async(req, res)=>{   
     const {user_account_name,  user_account_employee} = req.body;  
     const  query = `INSERT INTO eduall_system_accounts(ed_system_account_name,  ed_system_account_employee, ed_system_account_institute_code) VALUES(?,?,?)`; 
-    const PARAMS = [user_account_name.toLowerCase(), user_account_employee ,  GetCurrentUserData(1)]; 
+    const PARAMS = [user_account_name.toLowerCase(), user_account_employee ,  req.session.user.eduall_user_session_curentinstitute]; 
 
     if(CheckInternet() === true){   
     if(user_account_name.split("").length >= 5){ 
@@ -81,7 +81,7 @@ const RegisterInstituteUserAccount = async(req, res)=>{
                     LEFT JOIN eduall_employees ON  eduall_system_accounts.ed_system_account_employee =  eduall_employees.ed_employee_id 
                     WHERE ed_system_account_deleted = 0 AND  eduall_employees.ed_employee_institute_code = ?
                     AND ed_system_account_employee = ?  AND  ed_system_account_institute_code = ?`; 
-                    DATABASE.query(query4, [GetCurrentUserData(1), user_account_employee ,  GetCurrentUserData(1)], (err, rows)=>{ 
+                    DATABASE.query(query4, [req.session.user.eduall_user_session_curentinstitute, user_account_employee ,  req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
                         if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                             if(rows.length >= 1) return res.status(300).json({msg:"Este funcionario já tem uma conta associada  a esta instituição!"}); 
                             RegisterData();
@@ -101,7 +101,7 @@ const RegisterInstituteUserAccount = async(req, res)=>{
             //add useraccess 
             const  query4 = `SELECT * FROM eduall_system_accounts WHERE ed_system_account_deleted = 0 
             AND ed_system_account_employee = ?  AND  ed_system_account_institute_code = ?`; 
-            DATABASE.query(query4, [user_account_employee ,  GetCurrentUserData(1)], (err, rows)=>{ 
+            DATABASE.query(query4, [user_account_employee ,  req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
                 if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
                     if(rows.length >= 1){ 
                         const {
@@ -112,7 +112,7 @@ const RegisterInstituteUserAccount = async(req, res)=>{
                             ed_user_access_finances, ed_user_access_pedagogicalarea, ed_user_access_transportation, ed_user_access_library, ed_user_access_system, 
                             ed_user_access_configuration,ed_user_access_institute_code) VALUES(?,?,?,?,?,?,?,?,?,?,?)`; 
                         const PARAMS = [rows[0].ed_system_account_id, access_myschool, access_secretary, access_admnistration,access_finance, access_pedagogy,
-                        access_transportation,access_library,  access_system, access_configuration,  GetCurrentUserData(1)]; 
+                        access_transportation,access_library,  access_system, access_configuration,  req.session.user.eduall_user_session_curentinstitute]; 
             
                         DATABASE.query(query2, PARAMS, (err)=>{ 
                             if(err){

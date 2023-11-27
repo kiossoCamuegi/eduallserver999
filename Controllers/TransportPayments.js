@@ -43,7 +43,7 @@ const GetTransportPayments = async(req, res)=>{
      LEFT JOIN eduall_services ON eduall_services.ed_service_id = eduall_transport_payments.ed_transport_payment_service
      WHERE  eduall_transport_payments.ed_transport_payment_deleted = 0 AND 
      eduall_transport_payments.ed_transport_payment_institute_code = ?`; 
-     const PARAMS = [GetCurrentUserData(1)];
+     const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
      DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -54,7 +54,7 @@ const GetSingleTransportPayment = async(req,res)=>{
    LEFT JOIN eduall_students ON eduall_students.ed_student_id = eduall_transport_passengers.ed_transport_passenger_code  
    LEFT JOIN eduall_services ON eduall_transport_payments.ed_transport_payment_service  =  eduall_services.ed_service_id
    WHERE ed_transport_payment_deleted = 0 AND ed_transport_payment_id = ? AND ed_transport_payment_institute_code = ?`; 
-   const PARAMS = [ID, GetCurrentUserData(1)];
+   const PARAMS = [ID, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 } 
 
@@ -73,7 +73,7 @@ const GetSingleTransportPaidMonth = async(req,res)=>{
     LEFT JOIN eduall_students ON eduall_students.ed_student_id = eduall_transport_passengers.ed_transport_passenger_code  
     LEFT JOIN eduall_services ON eduall_transport_payments.ed_transport_payment_service  =  eduall_services.ed_service_id
     WHERE ed_transport_payment_deleted = 0 AND ed_transport_payment_id = ? AND ed_transport_payment_institute_code = ?`; 
-    const PARAMS = [ID, GetCurrentUserData(1)];
+    const PARAMS = [ID, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 } 
 
@@ -83,7 +83,7 @@ const GetSingleStudentTransportPayments = async(req,res)=>{
    LEFT JOIN eduall_services ON eduall_transport_payments.ed_transport_payment_service  =  eduall_services.ed_service_id
    WHERE eduall_transport_payments.ed_transport_payment_deleted = 0
    AND eduall_transport_payments.ed_transport_payment_student = ? AND eduall_transport_payments.ed_transport_payment_academic_year = ? AND ed_transport_payment_institute_code = ?`;  
-   const PARAMS = [PASSENGERCODE, ACADEMICYEAR ,GetCurrentUserData(1) ];
+   const PARAMS = [PASSENGERCODE, ACADEMICYEAR ,req.session.user.eduall_user_session_curentinstitute ];
    DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -97,7 +97,7 @@ const RegisterTransportPayments = async(req, res)=>{
    req.body.transportpayment_months,req.body.transportpayment_discount,req.body.transportpayment_type,
    req.body.transportpayment_bank, req.body.transportpayment_academic_year,req.body.transportpayment_place,req.body.transportpayment_balance,
    req.body.transportpayment_bordereux_number,req.body.transportpayment_iva,  req.body.transportpayment_fineValue, req.body.transportpayment_fineType, 
-   req.body.transportpayment_code,GetCurrentUserData(1)];
+   req.body.transportpayment_code,req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
  

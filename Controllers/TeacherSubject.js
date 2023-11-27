@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 const GetTeacherSubjects = async(req, res)=>{
    const {CODE} = req.params; 
    const  query = 'SELECT * FROM eduall_teacher_subjects WHERE ed_tch_subject_deleted = 0 AND ed_tch_subject_teacher_code = ?  AND ed_tch_subject_institute_code = ?';
-   const PARAMS = [CODE, GetCurrentUserData(1)];
+   const PARAMS = [CODE, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -48,7 +48,7 @@ const GetSingleTeacherSubject = async(req, res)=>{
     const {ID, CODE, CLASS} = req.params;
    const  query = `SELECT * FROM eduall_teacher_subjects WHERE ed_tch_subject_deleted = 0  AND
    ed_tch_subject_teacher_code = ? AND  ed_tch_subject_code = ? AND  ed_tch_subject_class = ? AND ed_tch_subject_institute_code = ?`;
-   const PARAMS = [CODE,ID, CLASS, GetCurrentUserData(1)];
+   const PARAMS = [CODE,ID, CLASS, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 
@@ -56,7 +56,7 @@ const RegisterTeacherSubject = async(req, res)=>{
    const  query = `INSERT INTO eduall_teacher_subjects(ed_tch_subject_code, ed_tch_subject_class,ed_tch_subject_teacher_code,
    ed_tch_subject_institute_code) VALUES(?,?,?,?)`;
    const PARAMS = [req.body.teacher_subject_code,  req.body.teacher_subject_class,
-   req.body.teacher_subject_teacher_code,  GetCurrentUserData(1)];
+   req.body.teacher_subject_teacher_code,  req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
  

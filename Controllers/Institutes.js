@@ -69,7 +69,7 @@ const InstituteUpdateLicence = async(req, res)=>{
 
 const GetCurentLicence = async(req, res)=>{ 
    const query = 'SELECT * FROM eduall_institutes_licences WHERE ed_institute_licence_instituteCode = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);  
 } 
 
@@ -113,9 +113,9 @@ const GetSingleInstituteByCode = async(req,res)=>{
 
    
 const GetCurrentInstituteByCode = async(req,res)=>{
-   console.log(GetCurrentUserData(1));
+   console.log(req.session.user.eduall_user_session_curentinstitute);
    const  query = 'SELECT * FROM eduall_institutes WHERE ed_institute_deleted = 0 AND ed_institute_code = ?';
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -157,7 +157,7 @@ const InstituteUpdate = async(req, res)=>{
     institute_country,institute_address ,institute_nif,institute_phone1  , institute_phone2 ,institute_email  
     , institute_bank1_name  , institute_bank1_account_number ,institute_bank1_recipient, institute_bank2_name  
     ,institute_bank2_account_number,institute_bank2_recipient,institute_iva,institute_language 
-    ,institute_type ,institute_website , (req.file ?  req.file.path : ""), GetCurrentUserData(1)];
+    ,institute_type ,institute_website , (req.file ?  req.file.path : ""), req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 1);
 } 
  

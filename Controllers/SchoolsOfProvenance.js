@@ -38,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
 const GetSchoolsOfProvenance = async(req, res)=>{ 
       const  query = `SELECT * FROM eduall_schools_of_provenance WHERE ed_schools_of_provenance_deleted = 0 
       AND ed_schools_of_provenance_institute_code = ?`;
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -56,7 +56,7 @@ const RegisterSchoolsOfProvenance = async(req, res)=>{
    const  query = `INSERT INTO eduall_schools_of_provenance(ed_schools_of_provenance_name, ed_schools_of_provenance_email,ed_schools_of_provenance_address, 
    ed_schools_of_provenance_country, ed_schools_of_provenance_description, ed_schools_of_provenance_institute_code) VALUES(?,?,?,?,?,?)`;
   const PARAMS = [req.body.schools_of_provenance_name,req.body.schools_of_provenance_email,req.body.schools_of_provenance_address, 
-  req.body.schools_of_provenance_country,req.body.schools_of_provenance_description , GetCurrentUserData(1)];
+  req.body.schools_of_provenance_country,req.body.schools_of_provenance_description , req.session.user.eduall_user_session_curentinstitute];
   DATABASERUN(res, query , PARAMS, 1);
 }
 

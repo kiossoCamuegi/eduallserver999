@@ -19,6 +19,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -49,7 +50,7 @@ const RegisterFile = async(req, res)=>{
    const  query = `INSERT INTO eduall_files(ed_file_name, ed_file_code, ed_file_size, ed_file_type, 
    ed_file_extension, ed_file_type_of_use, ed_file_institute_code) VALUES(?,?,?,?,?,?,?)`;
    const PARAMS = [req.file.path,req.body.file_code,req.body.file_size, req.body.file_type,
-   req.body.file_extension, req.body.file_use,GetCurrentUserData(1)];
+   req.body.file_extension, req.body.file_use,req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
 

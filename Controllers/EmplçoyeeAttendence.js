@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -38,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetEmployeesAttendance = async(req, res)=>{
     try {
-        const Data = await EmployeeAttendenceModel.findAll({where:{ed_employee_attd_deleted:0,ed_academic_level_institute_code:GetCurrentUserData(1)}});
+        const Data = await EmployeeAttendenceModel.findAll({where:{ed_employee_attd_deleted:0,ed_academic_level_institute_code:req.session.user.eduall_user_session_curentinstitute}});
         res.json(Data);
     } catch (error) {
          res.json(error);

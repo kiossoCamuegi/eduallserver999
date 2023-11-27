@@ -38,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetPublishers = async(req, res)=>{ 
       const  query = 'SELECT * FROM eduall_library_publishers WHERE ed_library_publisher_deleted = 0 AND ed_library_publisher_institute_code = ?';
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -53,7 +53,7 @@ const GetSinglePublisher = async(req,res)=>{
 const RegisterPublisher = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_library_publishers(ed_library_publisher_name, ed_library_publisher_status,
    ed_library_publisher_institute_code) VALUES(?,?,?)`;
-   const PARAMS = [req.body.publisher_name, req.body.publisher_status , GetCurrentUserData(1)];
+   const PARAMS = [req.body.publisher_name, req.body.publisher_status , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
 

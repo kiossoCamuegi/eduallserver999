@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -41,10 +42,10 @@ const GetChatMessagesByContact = async(req, res)=>{
     const  query = `SELECT * FROM eduall_chat_messages LEFT JOIN eduall_user_accounts ON 
      ed_chat_message_from = eduall_user_accounts.ed_user_account_id  
      WHERE ed_chat_message_from = ? AND ed_chat_message_to = ? OR ed_chat_message_from = ? AND ed_chat_message_to = ?`;
-    const PARAMS = [CODE, GetCurrentUserData(0), GetCurrentUserData(0), CODE];
+    const PARAMS = [CODE, req.session.user.eduall_user_session_ID, req.session.user.eduall_user_session_ID, CODE];
     DATABASE.query(query, PARAMS, (err, rows)=>{ 
         if(err) return res.status(300).json({status:300, success:false, error:err});;
-        return res.json({currentusercode:GetCurrentUserData(0), messages:rows});
+        return res.json({currentusercode:req.session.user.eduall_user_session_ID, messages:rows});
      });
 } 
 
@@ -53,7 +54,7 @@ const GetChatMessagesByContact = async(req, res)=>{
 const CreateChatMessage = async(req, res)=>{ 
     const  query = `INSERT INTO eduall_chat_messages (ed_chat_message_code, ed_chat_message_from, ed_chat_message_to,
     ed_chat_message_group_code, ed_chat_message_content, ed_chat_message_gif) VALUES(?,?,?,?,?,?)`;
-    const PARAMS = [req.body.chat_msg_code , GetCurrentUserData(0), req.body.chat_msg_to, req.body.chat_msg_group_code, req.body.chat_msg_content, req.body.chat_msg_gif];
+    const PARAMS = [req.body.chat_msg_code , req.session.user.eduall_user_session_ID, req.body.chat_msg_to, req.body.chat_msg_group_code, req.body.chat_msg_content, req.body.chat_msg_gif];
     DATABASERUN(res, query , PARAMS, 1);
 } 
 

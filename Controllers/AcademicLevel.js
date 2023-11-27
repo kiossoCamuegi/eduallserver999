@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -38,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetAcademicLevel = async(req,res)=>{ 
    const  query = `SELECT * FROM eduall_academic_level WHERE ed_academic_level_deleted = 0 AND ed_academic_level_institute_code = ?`;
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
  }
  
@@ -46,7 +47,7 @@ const GetAcademicLevel = async(req,res)=>{
    const  query = `INSERT INTO eduall_academic_level(ed_academic_level_title,  ed_academic_level_forExam, 
    ed_academic_level_forFt, ed_academic_level_institute_code) VALUES(?,?,?,?)`; 
    const PARAMS = [req.body.academic_level_title , req.body.academic_level_forExam, 
-   req.body.academic_level_forFt, GetCurrentUserData(1)];
+   req.body.academic_level_forFt, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
  }
  

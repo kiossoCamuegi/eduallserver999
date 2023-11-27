@@ -39,7 +39,7 @@ const DATABASERUN = (res, query, params, type)=>{
 const GetRequests = async(req, res)=>{ 
     const  query = `SELECT * FROM eduall_requests LEFT JOIN eduall_students ON eduall_students.ed_student_id  = ed_request_made_by
     WHERE ed_request_deleted = 0 AND ed_request_institute_code = ?`; 
-    const PARAMS = [GetCurrentUserData(1)];
+    const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -62,7 +62,7 @@ const GetsingleUserRequests = async(req,res)=>{
 
 const RegisterRequest = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_requests(ed_request_type,   ed_request_description,  ed_request_made_by, ed_request_institute_code) VALUES(?,?,?,?)`;
-    const PARAMS = [req.body.request_type, req.body.request_description, req.body.request_made_by, GetCurrentUserData(1)];
+    const PARAMS = [req.body.request_type, req.body.request_description, req.body.request_made_by, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 1);
 }
 

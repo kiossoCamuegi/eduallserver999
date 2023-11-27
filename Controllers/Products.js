@@ -43,7 +43,7 @@ const GetProducts= async(req, res)=>{
       eduall_products.ed_product_provider =  eduall_providers.ed_provider_id
       LEFT JOIN eduall_coins ON eduall_products.ed_product_coin  = eduall_coins.ed_coin_id
       WHERE ed_product_deleted = 0 AND ed_product_institute_code = ?`;
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -60,7 +60,7 @@ const RegisterProducts= async(req, res)=>{
    ed_product_stock_amount, ed_product_picture,ed_product_description, ed_product_institute_code) VALUES(?,?,?,?,?,?,?,?,?)`; 
    const PARAMS = [req.body.product_title , req.body.product_purchase_price ,req.body.product_sales_price , 
    req.body.product_provider ,req.body.product_type_of_coin ,  req.body.product_stock_amount,
-   req.file.path,req.body.product_description , GetCurrentUserData(1)];
+   req.file.path,req.body.product_description , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
 

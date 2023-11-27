@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -37,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
  
 const GetBookCategories = async(req, res)=>{ 
       const  query = 'SELECT * FROM eduall_library_categories WHERE ed_library_category_deleted = 0 and ed_library_category_institute_code = ?'; 
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -52,7 +53,7 @@ const GetSingleBookCategory = async(req,res)=>{
 const RegisterBookCategory = async(req, res)=>{ 
       const  query = `INSERT INTO eduall_library_categories(ed_library_category_title, ed_library_category_code, 
       ed_library_category_institute_code) VALUES(?,?,?)`;
-      const PARAMS = [req.body.category_title , req.body.category_code , GetCurrentUserData(1)];
+      const PARAMS = [req.body.category_title , req.body.category_code , req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 1); 
 }
  

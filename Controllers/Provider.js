@@ -38,7 +38,7 @@ const DATABASERUN = (res, query, params, type)=>{
 
 const GetProviders = async(req,res)=>{ 
       const  query = 'SELECT * FROM eduall_providers WHERE ed_provider_deleted = 0 AND ed_provider_institute_code = ?';
-      const PARAMS = [GetCurrentUserData(1)];
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -46,7 +46,7 @@ const RegisterProvider = async(req, res)=>{
    const  query = `INSERT INTO eduall_providers(ed_provider_title, ed_provider_phone, ed_provider_nif,ed_provider_website, ed_provider_address,ed_provider_city,
    ed_provider_country,ed_provider_email, ed_provider_description, ed_provider_institute_code) VALUES(?,?,?,?,?,?,?,?,?,?)`;
    const PARAMS = [req.body.provider_name, req.body.provider_phone,req.body.provider_nif,req.body.provider_website,req.body.provider_address,
-   req.body.provider_city,req.body.provider_country,req.body.provider_email,req.body.provider_description, GetCurrentUserData(1)] ;
+   req.body.provider_city,req.body.provider_country,req.body.provider_email,req.body.provider_description, req.session.user.eduall_user_session_curentinstitute] ;
    DATABASERUN(res, query , PARAMS, 1);
 }
 

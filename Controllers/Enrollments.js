@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -43,7 +44,7 @@ const GetEnrolledStudents = async(req, res)=>{
    LEFT JOIN eduall_academic_year ON eduall_academic_year.ed_academic_year_id =  eduall_class.ed_class_year
    LEFT JOIN eduall_services ON eduall_services.ed_service_id  =  eduall_enrollment.ed_enrollment_service
    WHERE eduall_enrollment.ed_enrollment_deleted = 0 AND eduall_enrollment.ed_enrollment_institute_code = ? `;
-   const PARAMS = [GetCurrentUserData(1)];
+   const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -56,7 +57,7 @@ const GetSingleEnrolledStudent = async(req,res)=>{
    LEFT JOIN eduall_services ON eduall_services.ed_service_id  =  eduall_enrollment.ed_enrollment_service
     WHERE ed_enrollment_deleted = 0 AND ed_enrollment_id = ? AND eduall_enrollment.ed_enrollment_institute_code = ?
    `;
-   const PARAMS = [ID, GetCurrentUserData(1)];
+   const PARAMS = [ID, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 0);    
 }
  
@@ -64,7 +65,7 @@ const GetSingleEnrolledStudent = async(req,res)=>{
 const RegisterEnrollment = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_enrollment(ed_enrollment_student, ed_enrollment_class, ed_enrollment_service,
    ed_enrollment_institute_code) VALUES(?,?,?,?)`;
-   const PARAMS = [req.body.enrollment_student_code, req.body.enrollment_class,req.body.enrollment_service_code, GetCurrentUserData(1)];
+   const PARAMS = [req.body.enrollment_student_code, req.body.enrollment_class,req.body.enrollment_service_code, req.session.user.eduall_user_session_curentinstitute];
     DATABASERUN(res, query , PARAMS, 1);
 } 
 

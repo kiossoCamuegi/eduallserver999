@@ -63,7 +63,7 @@ const RegisterLessonContent = async(req, res)=>{
    const  query = `INSERT INTO eduall_lessons_content(ed_lesson_content_code ,ed_lesson_content_title, ed_lesson_content_subtitle,  ed_lesson_content_sectionCode,  
    ed_lesson_content_description, ed_lesson_content_level, ed_lesson_content_instituteCode) VALUES(?,?,?,?,?,?,?)`;
    const PARAMS =  [req.body.lesson_code, req.body.lesson_title, req.body.lesson_subtitle, req.body.lesson_section, req.body.lesson_description, 
-   req.body.lesson_level, GetCurrentUserData(1)];
+   req.body.lesson_level, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 } 
  

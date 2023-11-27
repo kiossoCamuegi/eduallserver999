@@ -17,6 +17,7 @@ const DATABASERUN = (res, query, params, type)=>{
                return res.json("success");
              }); 
          } 
+         
       }else{  
          if(type === 0){
             DB_SQLITE.all(query, params, (err, rows)=>{ 
@@ -36,14 +37,15 @@ const DATABASERUN = (res, query, params, type)=>{
 }
  
 const GetPoints = async(req, res)=>{ 
-      const  query = 'SELECT * FROM eduall_continuous_avaliations WHERE ed_cn_avl_deleted = 0 AND  ed_cn_avl_instituteCode = ?';
-      const PARAMS = [GetCurrentUserData(1)];
+      const  query = `SELECT * FROM eduall_continuous_avaliations WHERE ed_cn_avl_deleted = 0 AND  ed_cn_avl_instituteCode = ?`;
+      const PARAMS = [req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 } 
 
 const GetPointsBySubClass = async(req, res)=>{
    const {ID} = req.params; 
-   const  query = 'SELECT * FROM eduall_continuous_avaliations WHERE ed_cn_avl_deleted = 0 AND ed_cn_avl_subClass = ? ';
+   const  query = `SELECT * FROM eduall_continuous_avaliations LEFT JOIN eduall_students ON
+   ed_student_id = ed_cn_avl_studentCode  WHERE ed_cn_avl_deleted = 0 AND ed_cn_avl_subClass = ? `;
    const PARAMS = [ID];
    DATABASERUN(res, query , PARAMS, 0);
 }
@@ -51,7 +53,7 @@ const GetPointsBySubClass = async(req, res)=>{
 
 const GetSinglePoint = async(req,res)=>{
    const {ID} = req.params; 
-   const  query = 'SELECT * FROM eduall_continuous_avaliations WHERE ed_cn_avl_deleted = 0 AND ed_cn_avl_id = ? ';
+   const  query = `SELECT * FROM eduall_continuous_avaliations WHERE ed_cn_avl_deleted = 0 AND ed_cn_avl_id = ? `;
    const PARAMS = [ID];
    DATABASERUN(res, query , PARAMS, 0);   
 } 
@@ -62,7 +64,7 @@ const RegisterPoint = async(req, res)=>{
    ed_cn_avl_description = ?, ed_cn_avl_date = ?, ed_cn_avl_instituteCode = ?) VALUES(?,?,?,?,?,?)`;
    const PARAMS =   [req.body.cn_avaliation_studentCode, req.body.cn_avaliation_subClass,  
    req.body.cn_avaliation_score, req.body.cn_avaliation_description, 
-   req.body.cn_avaliation_date , GetCurrentUserData(1)];
+   req.body.cn_avaliation_date , req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);
 }
 

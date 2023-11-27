@@ -48,7 +48,7 @@ const GetStudentEnrollmentConfirmations = async(req, res)=>{
     //########################
       const  query = 'SELECT * FROM eduall_academic_level WHERE ed_academic_level_deleted = 0 AND  ed_academic_level_institute_code = ?';
       try {
-         DB_SQLITE.all(query, [GetCurrentUserData(1)], (err, rows)=>{ 
+         DB_SQLITE.all(query, [req.session.user.eduall_user_session_curentinstitute], (err, rows)=>{ 
              if(err) return res.status(300).json({status:300, success:false, error:err});;
              return res.json(rows);
          }); 
@@ -116,7 +116,7 @@ const RegisterStudentEnrollmentConfirmation = async(req, res)=>{
 //########################
    const  query = `INSERT INTO eduall_academic_level(ed_academic_level_title, ed_academic_level_institute_code) VALUES(?,?)`;
    try {
-      DB_SQLITE.run(query, [req.body.academic_level_title , GetCurrentUserData(1)], (err)=>{ 
+      DB_SQLITE.run(query, [req.body.academic_level_title , req.session.user.eduall_user_session_curentinstitute], (err)=>{ 
             if(err) return res.status(300).json({status:300, success:false, error:err});;
             return res.json("success");
       }); 

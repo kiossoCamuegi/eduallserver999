@@ -48,7 +48,7 @@ const GetsingleStudentFeaturedNotebYSubStCls = async(req,res)=>{
       
        WHERE ed_student_featured_note_subject  = ? AND ed_student_featured_note_studentCode = ? 
        AND ed_student_featured_note_class  = ? AND  ed_student_featured_note_deleted  = 0 AND  ed_student_featured_note_institute_code  = ?  `;
-      const PARAMS = [SUBJECT, STUDENT, CLASS, GetCurrentUserData(1)];
+      const PARAMS = [SUBJECT, STUDENT, CLASS, req.session.user.eduall_user_session_curentinstitute];
       DATABASERUN(res, query , PARAMS, 0);
 }
 
@@ -56,7 +56,7 @@ const GetsingleStudentFeaturedNotebYSubStCls = async(req,res)=>{
 const RegisterStudentFeaturedNotes = async(req, res)=>{
    const  query = `INSERT INTO eduall_student_featured_notes(ed_student_featured_note_studentCode, ed_student_featured_note_class, ed_student_featured_note_subject, 
    ed_student_featured_note_score, ed_student_featured_note_institute_code	) VALUES(?,?,?,?,?)`; 
-   const PARAMS = [req.body.student_featured_code, req.body.student_featured_class  , req.body.student_featured_subject , req.body.student_featured_score, GetCurrentUserData(1)];
+   const PARAMS = [req.body.student_featured_code, req.body.student_featured_class  , req.body.student_featured_subject , req.body.student_featured_score, req.session.user.eduall_user_session_curentinstitute];
    DATABASERUN(res, query , PARAMS, 1);  
 }
 

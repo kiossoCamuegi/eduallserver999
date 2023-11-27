@@ -43,8 +43,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
-  maxAge:1000000,
-  expires: 1000000
+  maxAge: 100000000,
+  expires: 100000000
 }));
   
 app.use(bodyParser.urlencoded({extended:true}));

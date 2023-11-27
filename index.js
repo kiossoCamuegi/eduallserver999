@@ -44,7 +44,16 @@ app.use(session({
   saveUninitialized: false,
   store: sessionStore,
   maxAge: 100000000,
-  expires: 100000000
+  expires: 100000000,
+ name: 'session',
+  keys: ['key1', 'key2'],
+  cookie: {
+    secure: true,
+    httpOnly: true,
+    domain: 'http://localhost:3000',
+    path: 'foo/bar',
+    expires: 823997238974343
+  }
 }));
   
 app.use(bodyParser.urlencoded({extended:true}));

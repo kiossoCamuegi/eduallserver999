@@ -1,4 +1,4 @@
-const bcrypt  = require("bcryptjs")
+ const bcrypt  = require("bcryptjs")
 const jwt   = require("jsonwebtoken");
 const multer = require('multer');
 const path = require('path');  
@@ -102,15 +102,14 @@ const getSingleUserData = async(req, res)=>{
 
 
 const getCurrentUserInformation = async(req, res)=>{ 
-    const  query = `SELECT * FROM eduall_user_accounts INNER JOIN 
-    eduall_user_account_details ON 
-    eduall_user_accounts.ed_user_account_id = eduall_user_account_details.ed_user_account_detUSERID
-    WHERE eduall_user_accounts.ed_user_account_deleted = 0 AND eduall_user_accounts.ed_user_account_id = ?  `;
-    DATABASE.query(query, [req.session.user.eduall_user_session_ID], (err, userData)=>{ 
+    const  query = `SELECT * FROM eduall_user_accounts  WHERE ed_user_account_id = ?`;
+    const ID = req.session.user.eduall_user_sessesion_ID;
+
+    DATABASE.query(query, [ID], (err, userData)=>{ 
         if(err) return res.json(err); 
-        if(!userData[0]) return  res.sendStatus(401); 
-        res.json(userData[0]);
-   });   
+        console.log(userData)
+        res.json(userData)
+   }); 
 }
 
 
@@ -862,7 +861,8 @@ const Login = async(req, res)=>{
                                        req.session.user = {
                                            eduall_user_session_refreshToken:refreshToken,
                                            eduall_user_session_username:rows[0].ed_system_account_name,
-                                           eduall_user_session_curentinstitute:rows[0].ed_system_account_institute_code
+                                           eduall_user_session_curentinstitute:rows[0].ed_system_account_institute_code,
+                                           eduall_user_sessesion_ID:cr_usercode
                                        };   
                                        console.log(req.session)
                                        res.status(200).json({accessToken, sessions:req.session}); 

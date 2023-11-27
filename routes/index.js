@@ -88,11 +88,12 @@ const { DATABASE } = require("../config/Database");
 const router = express.Router();
  const jwt   = require("jsonwebtoken");     
  
-router.get("/", VerifyToken ,  (req, res)=>{
+router.get("/" ,  (req, res)=>{
    res.send("Hello my greatest friennds !");
 })
 
 router.get("/token", function(req, res){ 
+  if(req.session.user){
    if(req.session.user !== undefined && req.session.user !== null){
       const refreshToken =  req.session.user.eduall_user_session_refreshToken;
       const AdminUsername = req.session.user.eduall_user_session_username;
@@ -195,6 +196,9 @@ router.get("/token", function(req, res){
     }else{
       return res.json({data:null});
     } 
+  }else{
+   return res.json({data:null});
+  }
 })
 
 
@@ -720,3 +724,4 @@ router.get("/eduallcheckifuserisacontact/get/:CODE", VerifyToken , CheckUserCont
 router.post("/eduallprofilepageregistervisitor/post", VerifyToken, RegisterProfilePageVisitor);
 
 module.exports =  router;
+

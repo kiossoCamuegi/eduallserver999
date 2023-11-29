@@ -12,7 +12,7 @@ const session = require("express-session");
 const Sanitize = require('./middleware/Sanitize'); 
 const MySQLStore = require('express-mysql-session-ci')(session);
  
-
+var cookieSession = require('cookie-session');
 
 var app = express();
 dotenv.config({
@@ -36,27 +36,52 @@ const options = {
   createDatabaseTable: true,
 };
  
+
+app.set('trust proxy', 1); 
+app.use(cookieSession({
+                    name: 'session'
+                    , secret: "ijlrkdfsdfçjdslksfjdçluirjelksdçhnvndvkljfskd"
+                    , httpOnly: true
+                    , maxAge: 30 * 60 * 1000
+                    , secure: false
+                    , overwrite: false
+              }));
+app.use(cookieParser());
+app.use(bodyParser.json());
+
+
+ 
 const sessionStore = new MySQLStore(options);
+/*
 const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
 
-app.set('trust proxy', 1) // trust first proxy
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
-  maxAge: expiryDate,
-  expires: expiryDate,
+  maxAge:1000000,
+  expires: 1000000,
   cookie: {
-    maxAge: expiryDate,
-    sameSite: true,
-    secure:true
+    //secure: true,
+    //httpOnly: true,
+    expires: expiryDate      
 }
 
 }));
+*/
   
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
+ 
+
+
+
+
+
+
+
+
 
 app.use((req, res, next)=>{
   req.session.init = "init";
@@ -72,6 +97,10 @@ app.use('/images', express.static(__dirname+'/images'));
 app.use('/assets', express.static(__dirname+'/assets'));
 
  
+ 
+ 
+ 
+
 app.listen(process.env.PORT , function () {
   console.log("Server started at port: 5000");
 })
@@ -81,9 +110,6 @@ module.exports = {app, sessionStore};
 
 
  
-
-
-
  
  
 

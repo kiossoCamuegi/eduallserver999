@@ -12,6 +12,8 @@ const session = require("express-session");
 const Sanitize = require('./middleware/Sanitize'); 
 const MySQLStore = require('express-mysql-session-ci')(session);
  
+
+
 var app = express();
 dotenv.config({
   path:path.join(__dirname, './.env')
@@ -26,33 +28,31 @@ app.use(express.static(path.join(__dirname, 'public')));
  
 
 const options = {
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: '',
-  database: 'eduall',
+ host:"bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com",  
+ user:"uf3c2i1lgdfrfn9v",
+  password:"mY92miw96iMOuJHuWXH9",   
+ database:"bbwmy0j6vnqfwlwreg3x", 
+ port:3306,
   createDatabaseTable: true,
 };
  
 const sessionStore = new MySQLStore(options);
 const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
-app.set('trust proxy', 1)
- 
 
-app.use(
-  session({
-    secret: ['veryimportantsecret','notsoimportantsecret','highlyprobablysecret'], 
-     name: "secretname", 
-     cookie: {
-      httpOnly: true,
-      secure: true,
-      sameSite: true,
-      maxAge: 600000 // Time is in miliseconds
-  },
-    store:sessionStore,   
-    resave: false
-  })
-)
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore,
+  maxAge:1000000,
+  expires: 1000000,
+  cookie: {
+    //secure: true,
+    //httpOnly: true,
+    expires: expiryDate      
+}
+
+}));
   
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
@@ -70,6 +70,10 @@ app.use(Authrouter);
 app.use(Sanitize());
 app.use('/images', express.static(__dirname+'/images'));
 app.use('/assets', express.static(__dirname+'/assets'));
+
+ 
+ 
+ 
  
 
 app.listen(process.env.PORT , function () {
@@ -85,7 +89,5 @@ module.exports = {app, sessionStore};
 
 
  
-
-
 
  

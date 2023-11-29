@@ -43,7 +43,7 @@ app.use(cookieSession({
                     , secret: "ijlrkdfsdfçjdslksfjdçluirjelksdçhnvndvkljfskd"
                     , httpOnly: true
                     , maxAge: 30 * 60 * 1000
-                    , secure: false
+                    , secure: true,
                     , overwrite: false
               }));
 app.use(cookieParser());

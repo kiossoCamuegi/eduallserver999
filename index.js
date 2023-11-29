@@ -28,11 +28,11 @@ app.use(express.static(path.join(__dirname, 'public')));
  
 
 const options = {
-  host: 'localhost',
+  host: 'bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com',
   port: 3306,
-  user: 'root',
-  password: '',
-  database: 'eduall',
+  user: 'uf3c2i1lgdfrfn9v',
+  password: 'mY92miw96iMOuJHuWXH9',
+  database: 'bbwmy0j6vnqfwlwreg3x',
   createDatabaseTable: true,
 };
  

@@ -12,8 +12,16 @@ const UpdateCurrentUserInstitute = async(req, res)=>{
        DATABASE.query(query, [CODE], (err, rows)=>{ 
         if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor !"});
         if(rows.length >= 1){ 
+            req.session.user = {
+                eduall_user_session_refreshToken:req.session.user.eduall_user_session_refreshToken, 
+                eduall_user_session_curentinstitute:CODE,
+                eduall_user_session_ID:req.session.user.eduall_user_session_ID
+            };
 
-            req.session.user.eduall_user_session_curentinstitute =   CODE; 
+            console.log("-----------------------------------------*************");
+            console.log(req.session)    
+            console.log("-----------------------------------------*************");
+
             res.status(200).json("Informação atualizada com sucesso !"); 
 
         }else{

@@ -68,12 +68,13 @@ const GetSingleEmployee = async(req, res)=>{
 
 
 const GetEmployeeDataByUser = async(req, res)=>{ 
+       const ID = req.session.user.eduall_user_session_ID;
        const  query = `SELECT * FROM eduall_user_institutes  
        LEFT JOIN eduall_institutes ON  eduall_user_institutes.ed_user_institute_code = eduall_institutes.ed_institute_code
        LEFT JOIN eduall_employees ON  eduall_user_institutes.ed_user_institute_employeeCode = eduall_employees.ed_employee_id
       WHERE eduall_user_institutes.ed_user_institute_deleted = 0 AND  eduall_user_institutes.ed_user_institute_userCode = ? 
       AND eduall_user_institutes.ed_user_institute_code = ?  AND eduall_employees.ed_employee_institute_code  = ?`;
-      DATABASERUN(res, query, [req.session.user.eduall_user_session_ID, req.session.user.eduall_user_session_curentinstitute, req.session.user.eduall_user_session_curentinstitute], 0);
+      DATABASERUN(res, query, [ID, req.session.user.eduall_user_session_curentinstitute, req.session.user.eduall_user_session_curentinstitute], 0);
 }
 
 

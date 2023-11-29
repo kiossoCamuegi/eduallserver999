@@ -44,6 +44,7 @@ const GetEmployeesAttendance = async(req, res)=>{
 }
 
 const GetEmployeeAttendanceBycode = async(req,res)=>{
+   const ID = req.session.user.eduall_user_session_ID; 
    const {CODE} = req.params; 
    const  query = `SELECT * FROM eduall_employee_attendence
 
@@ -55,7 +56,7 @@ const GetEmployeeAttendanceBycode = async(req,res)=>{
 
    WHERE eduall_employee_attendence.ed_employee_attd_deleted = 0 AND eduall_employee_attendence.ed_employee_attd_code = ? 
    AND eduall_employee_attendence.ed_employee_attd_institute_code = ?`;
-   const PARAMS = [CODE, req.session.user.eduall_user_session_curentinstitute];
+   const PARAMS = [CODE, req.session.user.eduall_user_session_curentinstitute]; 
    DATABASERUN(res, query , PARAMS, 0);
 }  
  

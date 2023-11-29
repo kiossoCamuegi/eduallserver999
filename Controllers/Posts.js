@@ -63,7 +63,7 @@ const GetPostsForCurrentUser = async(req, res)=>{
 
 
 const GetUserPostsByContacts = async(req, res)=>{ 
-     
+   const ID = req.session.user.eduall_user_session_ID;
  //* start here **/
  let output =  [];
  const NewArray = []
@@ -280,7 +280,7 @@ const GetUserPostsByContacts = async(req, res)=>{
    }
 
 
-   DATABASE.query(query, [req.session.user.eduall_user_session_ID] , (err, data)=>{  
+   DATABASE.query(query, [ID] , (err, data)=>{  
     if(!err){
        if(data.length >= 1){
           data.map((item, index)=>{

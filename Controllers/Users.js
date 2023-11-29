@@ -1,4 +1,4 @@
- const bcrypt  = require("bcryptjs")
+const bcrypt  = require("bcryptjs")
 const jwt   = require("jsonwebtoken");
 const multer = require('multer');
 const path = require('path');  
@@ -51,16 +51,18 @@ const DATABASERUN = (res, query, params, type)=>{
  
 
  const UPDATEProfilePicture = async(req, res)=>{ 
+    const ID = req.session.user.eduall_user_session_ID;
     const  query = `UPDATE eduall_user_accounts SET ed_user_account_picture = ?
     WHERE ed_user_account_deleted = 0 AND ed_user_account_id = ?`;
-    const PARAMS = [(req.file ? "images/users/"+req.file.filename : ""), req.session.user.eduall_user_session_ID];
+    const PARAMS = [(req.file ? "images/users/"+req.file.filename : ""), ID];
     DATABASERUN(res, query , PARAMS, 1);  
  }
 
 
  const UPDATEProfileCoverImage = async(req, res)=>{ 
+    const ID = req.session.user.eduall_user_session_ID;
     const  query = `UPDATE  eduall_user_account_details SET	ed_user_account_detProfileCover = ? WHERE ed_user_account_detUSERID = ?`;
-    const PARAMS = [(req.file ? "images/users/covers/"+req.file.filename : ""), req.session.user.eduall_user_session_ID];
+    const PARAMS = [(req.file ? "images/users/covers/"+req.file.filename : ""), ID];
      DATABASERUN(res, query , PARAMS, 1);   
  }
 
@@ -103,7 +105,7 @@ const getSingleUserData = async(req, res)=>{
 
 const getCurrentUserInformation = async(req, res)=>{ 
     const  query = `SELECT * FROM eduall_user_accounts  WHERE ed_user_account_id = ?`;
-    const ID = req.session.user.eduall_user_sessesion_ID;
+    const ID = req.session.user.eduall_user_session_ID;
 
     DATABASE.query(query, [ID], (err, userData)=>{ 
         if(err) return res.json(err); 
@@ -782,8 +784,10 @@ const Login = async(req, res)=>{
                         DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
                             if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
                             console.log("You are about to login with email and password my Nigga 😁😘🤷‍♂️🤷‍♂️😜");
-                            req.session.user.eduall_user_session_refreshToken = refreshToken;   
-                            req.session.user.eduall_user_sessesion_ID = cr_usercode;
+                            req.session.user = {
+                                eduall_user_session_refreshToken:refreshToken, 
+                                eduall_user_session_ID:cr_usercode
+                            };   
                             setTimeout(() => {
                                res.status(200).json({accessToken});
                             }, 500);
@@ -862,7 +866,7 @@ const Login = async(req, res)=>{
                                            eduall_user_session_refreshToken:refreshToken,
                                            eduall_user_session_username:rows[0].ed_system_account_name,
                                            eduall_user_session_curentinstitute:rows[0].ed_system_account_institute_code,
-                                           eduall_user_sessesion_ID:cr_usercode
+                                           eduall_user_session_ID:cr_usercode
                                        };   
                                        console.log(req.session)
                                        res.status(200).json({accessToken, sessions:req.session}); 

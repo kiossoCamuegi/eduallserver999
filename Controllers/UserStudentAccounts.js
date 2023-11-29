@@ -58,6 +58,7 @@ const GetStudentsUserAccounts = async(req, res)=>{
 
 
 const GetSingleUserStudentAccounts = async(req, res)=>{  
+   const ID = req.session.user.eduall_user_session_ID; 
    const  query = `SELECT * FROM eduall_users_student_accounts LEFT JOIN eduall_students ON  
 
     eduall_users_student_accounts.ed_user_std_account_studentCode = eduall_students.ed_student_id
@@ -68,7 +69,7 @@ const GetSingleUserStudentAccounts = async(req, res)=>{
    
    eduall_students.ed_student_deleted = 0 
    `;
-   const PARAMS = [req.session.user.eduall_user_session_ID];
+   const PARAMS = [ID];
    DATABASERUN(res, query , PARAMS, 0);  
 }
 

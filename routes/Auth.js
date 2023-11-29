@@ -4,7 +4,7 @@ const passport = require("passport");
 const { DATABASE } = require("../config/Database");
 const jwt   = require("jsonwebtoken");
 require("../Controllers/UsersSocialAuth");
-const URL = "http://localhost:3000/"; 
+const URL = "https://eduallsys.com/"; 
 
 function isLoggedIn(req, res, next){
      req.user ? next() : res.sendStatus(401);

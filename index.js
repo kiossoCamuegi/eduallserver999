@@ -45,8 +45,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
-  maxAge:1000000,
-  expires: 1000000,
+  maxAge: expiryDate,
+  expires: expiryDate,
   cookie: {
     maxAge: expiryDate,
     sameSite: true,

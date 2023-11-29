@@ -41,14 +41,13 @@ const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
 
 app.use(session({
     store: sessionStore,
-    secret: process.env.SESSION_SECRET,
+    secret: "ejdlsçklçsd~kçlds~çkdslksdçsldkjffs",
     resave: false,
     saveUninitialized: false,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000 * 90,
       secure: true,
-      httpOnly: true,
-      sameSite: 'strict'
+      httpOnly: true
     }
 
 }));

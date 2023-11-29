@@ -40,17 +40,16 @@ const sessionStore = new MySQLStore(options);
 const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
 
 app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  store: sessionStore,
-  maxAge:1000000,
-  expires: 1000000,
-  cookie: {
-    //secure: true,
-    //httpOnly: true,
-    expires: expiryDate      
-}
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000 * 90,
+      secure: true,
+      httpOnly: true,
+      sameSite: 'strict'
+    }
 
 }));
   

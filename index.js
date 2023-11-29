@@ -37,20 +37,22 @@ const options = {
 const sessionStore = new MySQLStore(options);
 const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
 
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  store: sessionStore,
-  maxAge:1000000,
-  expires: 1000000,
-  cookie: {
-    //secure: true,
-    //httpOnly: true,
-    expires: expiryDate      
-}
+ 
 
-}));
+app.use(
+  session({
+    secret: ['veryimportantsecret','notsoimportantsecret','highlyprobablysecret'], 
+     name: "secretname", 
+     cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: true,
+      maxAge: 600000 // Time is in miliseconds
+  },
+    store:sessionStore,   
+    resave: false
+  })
+)
   
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());

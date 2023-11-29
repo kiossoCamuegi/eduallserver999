@@ -36,7 +36,7 @@ const options = {
  
 const sessionStore = new MySQLStore(options);
 const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
-
+app.set('trust proxy', 1)
  
 
 app.use(

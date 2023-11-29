@@ -820,7 +820,7 @@ const Login = async(req, res)=>{
                     if(err){
                       console.log(err)
                       console.log("error - 1")
-                     res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
+                       res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !", error:err});
                     }
     
     

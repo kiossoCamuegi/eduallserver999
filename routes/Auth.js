@@ -4,7 +4,7 @@ const passport = require("passport");
 const { DATABASE } = require("../config/Database");
 const jwt   = require("jsonwebtoken");
 require("../Controllers/UsersSocialAuth");
-const URL = "https://eduallsys.com/"; 
+const URL = "http://localhost:3000/"; 
 
 function isLoggedIn(req, res, next){
      req.user ? next() : res.sendStatus(401);
@@ -95,7 +95,7 @@ router.get("/eduallgoogleauthentication/signin", isLoggedIn,  (req, res)=>{
                  DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
                      if(err) return res.redirect(URL+"autherror"); /// return res.json(err);  
                      req.session.user.eduall_user_session_refreshToken = refreshToken;   
-                     req.session.user.eduall_user_sessesion_ID = cr_usercode;
+                     req.session.user.eduall_user_session_ID = cr_usercode;
 
                       res.redirect(URL+"newsfeed");
                  });
@@ -220,7 +220,7 @@ router.get("/eduallfacebookauthentication/signin", isLoggedIn,  (req, res)=>{
                  DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
                      if(err) return res.redirect(URL+"autherror"); 
                      req.session.user.eduall_user_session_refreshToken = refreshToken;   
-                      req.session.user.eduall_user_sessesion_ID = cr_usercode;
+                      req.session.user.eduall_user_session_ID = cr_usercode;
                      return res.redirect(URL+"newsfeed");
                  });
 

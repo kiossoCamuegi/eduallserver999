@@ -66,7 +66,7 @@ const { GetSingleStudentOldClasses, RegisterOldClass } = require("../Controllers
 const { GetsingleStudentExamNotebYSubStCls, RegisterStudentExamNotes, UpdateStudentExamNotes } = require("../Controllers/StudentExams");
 const { GetsingleStudentFeaturedNotebYSubStCls, RegisterStudentFeaturedNotes, UpdateStudentFeaturedNotes } = require("../Controllers/StudentFeaturedNotes");
 const { GetSingleUserInstitutes } = require("../Controllers/UserInstitutes");
-const { GetSingleUserChilds, ChewckSingleUserChilds, RegisterUserChilds } = require("../Controllers/ParentsChilds");
+const { GetSingleUserChilds, ChewckSingleUserChilds, RegisterUserChilds, GetParentsUserChildsByInstitute, GetUserChilds, UserChildDelete } = require("../Controllers/ParentsChilds");
 const { RegisteraDS, addAlbum } = require("../Controllers/Ads");
 const { RegisterStudentExamCalendar, GetExamsCalendar, GetExamsCalendarByClass, UpdateStudentExamCalendar, DeleteStudentExamCalendar, GetSingleExamCalendar } = require("../Controllers/StudentExamsCalendar");
 const { RegisterEnrollment, GetEnrolledStudents, EnrolledStudentDelete, GetSingleEnrolledStudent } = require("../Controllers/Enrollments");
@@ -667,7 +667,10 @@ router.get("/eduallgetsingleuserinstitutes/get/:CODE", VerifyToken ,   GetSingle
 
 router.get("/eduallgetsingleuserchilds/get", VerifyToken ,   GetSingleUserChilds);
 router.get("/eduallchecksingleuserchild/get/:USERCODE,:STUDENTCODE", VerifyToken , ChewckSingleUserChilds);
+router.get("/eduallgetuserchilds/get/:ID", VerifyToken, GetUserChilds);
 router.post("/edualluserchildregister/post/", VerifyToken , RegisterUserChilds);
+router.get("/eduallgetuserparentsacccountsbyinstitute/get", VerifyToken, GetParentsUserChildsByInstitute);
+router.put("/edualluserchildaccountdelete/delete/:ID", VerifyToken, UserChildDelete);
 
 
 router.post("/eduallstudentexamcalendarregister/post", VerifyToken ,   RegisterStudentExamCalendar); 
@@ -724,4 +727,3 @@ router.get("/eduallcheckifuserisacontact/get/:CODE", VerifyToken , CheckUserCont
 router.post("/eduallprofilepageregistervisitor/post", VerifyToken, RegisterProfilePageVisitor);
 
 module.exports =  router;
-

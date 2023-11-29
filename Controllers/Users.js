@@ -757,7 +757,7 @@ const Login = async(req, res)=>{
         if(emailRegexp.test(req.body.ed_user_account_email)){  
             const  query = `SELECT * FROM eduall_user_accounts WHERE ed_user_account_deleted = 0 AND  ed_user_account_email = ?  `;
             DATABASE.query(query, [req.body.ed_user_account_email], (err, user)=>{ 
-                if(err) return res.json(err);  
+                if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 8 !", error:err, data:req.body}); 
               if(!user[0]) return res.status(400).json({msg:"Conta não encomtrada !"});  
                   if(bcrypt.compareSync(req.body.ed_user_account_password , user[0].ed_user_account_password)){
                     const cr_usercode = user[0].ed_user_account_id;
@@ -782,7 +782,7 @@ const Login = async(req, res)=>{
                         const  query5 = `INSERT INTO eduall_login_registers(ed_log_user, ed_log_zone, ed_log_type) VALUES(?,?,?)`;
                         const PARAMS5 = [cr_usercode, 2, "email"];
                         DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
-                            if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
+                            if(err) return  res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 333** !"});
                             console.log("You are about to login with email and password my Nigga 😁😘🤷‍♂️🤷‍♂️😜");
                             req.session.user = {
                                 eduall_user_session_refreshToken:refreshToken, 
@@ -820,7 +820,7 @@ const Login = async(req, res)=>{
                     if(err){
                       console.log(err)
                       console.log("error - 1")
-                       res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !", error:err});
+                       res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !", error:err, data:req.body});
                     }
     
     

@@ -76,7 +76,7 @@ const { RegisterPublication, GetPostsForCurrentUser, GetCurrentUserPosts, GetUse
 const { UpdateCurrentUserInstitute, GetCurrentUserData } = require("../Controllers/GetCurrentUserData");
 const { RegisterStudentUserAccount, GetSingleUserStudentAccounts } = require("../Controllers/UserStudentAccounts");
 const ChangeServerNetworkStatus = require("../config/ChangeServerNetworkStatus");
-const { RegisterTransportPayments, GetTransportPayments, GetSingleTransportPayment, GetSingleTransportPaidMonth, GetSingleStudentTransportPayments, TransportPaymentsDelete, TransportPaymentsUpdate } = require("../Controllers/TransportPayments");
+const { RegisterTransportPayments, GetTransportPayments, GetSingleTransportPayment, GetSingleTransportPaidMonth, GetSingleStudentTransportPayments, TransportPaymentsDelete, TransportPaymentsUpdate, GetSingleStudentTransportPaymentsByCode } = require("../Controllers/TransportPayments");
 const { GetCurrentUserConnections } = require("../Controllers/UserConnections");
 const { CreateChatMessage, GetChatMessagesByContact } = require("../Controllers/ChatMessages");
 const { RegisterStudentBehavior, GetAllStudentBehaviorByStudentCode } = require("../Controllers/StudentBehavior");
@@ -376,6 +376,7 @@ router.get("/edualltransportpaymentcheckpaidmonth/:MONTH,:STUDENTCODE,:YEAR", Ve
 router.get("/eduallsinglestudenttransportpayment/get/:PASSENGERCODE,:ACADEMICYEAR", VerifyToken ,   GetSingleStudentTransportPayments);
 router.put("/edualltransportpaymentsdelete/delete/:ID", VerifyToken ,   TransportPaymentsDelete);
 router.put("/edualltransportpaymentupdate/update/:ID", VerifyToken ,   TransportPaymentsUpdate);
+router.get("/eduallgetstudenttransportpaymentsbycode/get/:STUDENTCODE,:ACADEMICYEAR", VerifyToken , GetSingleStudentTransportPaymentsByCode);
 
 router.get("/eduallgetjobtitles/", VerifyToken , GetJobTitles);
 router.get("/eduallgetsinglejobtitle/get/:ID", VerifyToken ,  GetSingleJobTitle); 

@@ -17,17 +17,28 @@ const DB_SQLITE = new sqlite.Database("./me.db", (err) => {
     }
 }); 
 
+
+
+ 
+ 
+
+
+
   
 const CurrentNetworkStatus = ()=>{  
+  return  {
+    connectionLimit: 10,
+    password:"",
+    user:"root",
+    database:"eduall",
+    host:"localhost",
+    port: process.env.DB_PORT,
+    charset:"utf8mb4"
+ } 
+/*
   return {host:"bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com",  user:"uf3c2i1lgdfrfn9v",
-  password:"mY92miw96iMOuJHuWXH9",   database:"bbwmy0j6vnqfwlwreg3x", port:3306,
- 
-    connectionLimit: 10 ,
-    connectTimeout: 10000,
-    waitForConnections: true,
-    queueLimit: 0 , 
-};
-
+  password:"mY92miw96iMOuJHuWXH9",   database:"bbwmy0j6vnqfwlwreg3x", port:3306};
+*/
 } 
 
 const pool = mysql.createPool(CurrentNetworkStatus());
@@ -62,5 +73,4 @@ handleDisconnect();
 
  
 module.exports =  {DATABASE, SESSION_STORE, DB_SQLITE};
- 
  

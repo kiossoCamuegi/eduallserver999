@@ -12,6 +12,8 @@ const session = require("express-session");
 const Sanitize = require('./middleware/Sanitize'); 
 const MySQLStore = require('express-mysql-session')(session);
 const mysql = require('mysql');
+const RandomStrings = require('./config/RandomStrings');
+const CODE = RandomStrings();
 
 
 var app = express();
@@ -43,7 +45,7 @@ const  sessionStore = new MySQLStore(options, pool);
 const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
 
 app.use(session({
-  secret: 'your-secret-key',
+  secret:CODE,
   resave: false,
   saveUninitialized: false,
   store: sessionStore,

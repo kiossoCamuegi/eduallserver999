@@ -88,6 +88,19 @@ const GetSingleStudentTransportPayments = async(req,res)=>{
 }
 
 
+const GetSingleStudentTransportPaymentsByCode = async(req,res)=>{
+   const {ACADEMICYEAR, STUDENTCODE} = req.params; 
+   const  query = `SELECT * FROM eduall_transport_payments
+   LEFT JOIN eduall_services ON eduall_transport_payments.ed_transport_payment_service  =  eduall_services.ed_service_id
+   LEFT JOIN eduall_transport_passengers ON eduall_transport_passengers.ed_transport_passenger_id  = eduall_transport_payments.ed_transport_payment_student
+   LEFT JOIN eduall_students ON eduall_students.ed_student_id = eduall_transport_passengers.ed_transport_passenger_code 
+   WHERE eduall_transport_payments.ed_transport_payment_deleted = 0
+   AND eduall_students.ed_student_id = ? AND eduall_transport_payments.ed_transport_payment_academic_year = ? AND ed_transport_payment_institute_code = ?`;  
+   const PARAMS = [STUDENTCODE, ACADEMICYEAR ,req.session.user.eduall_user_session_curentinstitute ];
+   DATABASERUN(res, query , PARAMS, 0);
+}
+
+
 const RegisterTransportPayments = async(req, res)=>{ 
    const  query = `INSERT INTO eduall_transport_payments(ed_transport_payment_student,ed_transport_payment_service,ed_transport_payment_price,
     ed_transport_payment_month, ed_transport_payment_discount,ed_transport_payment_type,ed_transport_payment_bank, ed_transport_payment_academic_year,
@@ -132,5 +145,5 @@ const TransportPaymentsUpdate = async(req, res)=>{
 module.exports = {GetTransportPayments, GetSingleTransportPayment, 
     GetSingleTransportPaidMonth, GetSingleStudentTransportPayment, 
     GetSingleStudentTransportPayments, RegisterTransportPayments,
-    TransportPaymentsDelete, TransportPaymentsUpdate
+    TransportPaymentsDelete, TransportPaymentsUpdate, GetSingleStudentTransportPaymentsByCode
 };

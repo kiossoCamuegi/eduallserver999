@@ -37,7 +37,7 @@ app.use(session({
   cookie: {
     secure: true,
     httpOnly: true,
-    domain: 'example.com',
+    domain: 'http://localhost:3000',
     path: 'foo/bar',
     expires: expiryDate
   }

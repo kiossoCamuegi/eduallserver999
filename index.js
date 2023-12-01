@@ -1,4 +1,4 @@
-var createError = require('http-errors');
+ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser'); 
@@ -14,7 +14,6 @@ const MySQLStore = require('express-mysql-session')(session);
 const mysql = require('mysql');
 const RandomStrings = require('./config/RandomStrings');
 const CODE = RandomStrings();
-
 
 var app = express();
 dotenv.config({
@@ -37,6 +36,7 @@ const options = {
   port:3306,
   createDatabaseTable: true,
 };
+
  
 const pool = mysql.createPool(options);
 const  sessionStore = new MySQLStore(options, pool);
@@ -45,15 +45,15 @@ const  sessionStore = new MySQLStore(options, pool);
 const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
 
 app.use(session({
-  secret:CODE,
+  secret: CODE,
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
   maxAge:1000000,
   expires: 1000000,
   cookie: {
-    secure: true,
-    httpOnly: true,
+    //secure: true,
+    //httpOnly: true,
     expires: expiryDate      
 }
 
@@ -78,11 +78,22 @@ app.use('/images', express.static(__dirname+'/images'));
 app.use('/assets', express.static(__dirname+'/assets'));
 
  
+ 
+ 
+ 
+
 app.listen(process.env.PORT , function () {
   console.log("Server started at port: 5000");
 })
 
 module.exports = {app, sessionStore};
 
+
+
+ 
+
+
+
+ 
 
  

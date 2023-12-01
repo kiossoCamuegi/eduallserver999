@@ -8,12 +8,9 @@ const Cors = require("cors");
 const passport = require("passport")
 var router = require('./routes/index');  
 var Authrouter = require('./routes/Auth'); 
-const session = require("express-session");  
+const session = require("cookie-session");  
 const Sanitize = require('./middleware/Sanitize'); 
-const MySQLStore = require('express-mysql-session')(session);
-const mysql = require('mysql');
 const RandomStrings = require('./config/RandomStrings');
-const CODE = RandomStrings();
 
 var app = express();
 dotenv.config({
@@ -28,42 +25,28 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
  
 
-const options = {
-  host:"bbwmy0j6vnqfwlwreg3x-mysql.services.clever-cloud.com",  
-  user:"uf3c2i1lgdfrfn9v",
-  password:"mY92miw96iMOuJHuWXH9",   
-  database:"bbwmy0j6vnqfwlwreg3x", 
-  port:3306,
-  createDatabaseTable: true,
-};
-
- 
-const pool = mysql.createPool(options);
-const  sessionStore = new MySQLStore(options, pool);
 
 
-const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
+
 app.set('trust proxy', 1) // trust first proxy
 
+const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 app.use(session({
-  secret: "ddjkdncjcdldkld",
-  resave: false,
-  saveUninitialized: false,
-  store: sessionStore,
-  maxAge:1000000,
-  expires: 1000000,
+  name: 'session',
+  keys: ['key1', 'key2'],
   cookie: {
-    //secure: true,
-    //httpOnly: true,
-    expires: expiryDate      
-}
-
-}));
+    secure: true,
+    httpOnly: true,
+    domain: 'example.com',
+    path: 'foo/bar',
+    expires: expiryDate
+  }
+}))
   
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
-
+const sessionStore = null;
 
 app.use((req, res, next)=>{
   req.session.init = "init";

@@ -34,9 +34,7 @@ const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 app.use(session({
   name: 'session',
   keys: ['key1', 'key2'],
-  cookie: {
-    secure: true,
-    httpOnly: true,
+  cookie: { 
     domain: 'http://localhost:3000',
     path: 'foo/bar',
     expires: expiryDate

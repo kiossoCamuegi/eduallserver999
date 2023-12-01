@@ -45,7 +45,7 @@ const  sessionStore = new MySQLStore(options, pool);
 const expiryDate = new Date(Date.now() + 24 * 60 * 60 * (1000*24*10))
 
 app.use(session({
-  secret: CODE,
+  secret: "ddjkdncjcdldkld",
   resave: false,
   saveUninitialized: false,
   store: sessionStore,

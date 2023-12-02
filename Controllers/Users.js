@@ -751,7 +751,7 @@ const UPDATETOKEN  = async(refreshToken , cr_usercode)=>{
 }
  
 
-const Login = async(req, res)=>{
+const Login = async(req, res, next)=>{
         const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
       if((req.body.ed_user_account_email !== null && req.body.ed_user_account_email !== undefined) && (req.body.ed_user_account_password !== null && req.body.ed_user_account_password !== undefined )){
         if(emailRegexp.test(req.body.ed_user_account_email)){  
@@ -908,6 +908,7 @@ const Login = async(req, res)=>{
       }else{
          return res.status(400).json({msg:"Preencha corretamente os campos !"});  
       }
+ next();
 }
 
 

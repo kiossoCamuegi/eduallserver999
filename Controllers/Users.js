@@ -789,6 +789,7 @@ const Login = async(req, res)=>{
                                 eduall_user_session_ID:cr_usercode
                             };   
                             setTimeout(() => {
+                               res.cookie("kiosso_cookie", 'my name is kiosso', {expire: 960000 + Date.now()}); 
                                res.status(200).json({accessToken});
                             }, 500);
                         });

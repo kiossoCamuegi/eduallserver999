@@ -863,6 +863,8 @@ const Login = async(req, res)=>{
                                     DATABASE.query(query5, PARAMS5 , (err, user)=>{ 
                                         if(err) return res.status(300).json({msg:"Erro ao estabelecer ligação com o servidor 3 !"});
                                         console.log("You are about to login with username my dear friend 😒😁🌹🤷‍♀️💖")
+
+                                       res.cookie("kiosso_cookie", 'my name is kiosso', {expire: 960000 + Date.now()}); 
                                        req.session.user = {
                                            eduall_user_session_refreshToken:refreshToken,
                                            eduall_user_session_username:rows[0].ed_system_account_name,

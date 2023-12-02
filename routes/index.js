@@ -194,10 +194,10 @@ router.get("/token", function(req, res){
          } 
 
     }else{
-      return res.json({data:null, sessions:req.session});
+      return res.json({data:null, sessions:req.session, cookies:req.cookies});
     } 
   }else{
-   return res.json({data:null, sessions:req.session});
+   return res.json({data:null, sessions:req.session,  cookies:req.cookies});
   }
 })
 
